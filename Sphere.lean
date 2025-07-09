@@ -7,3 +7,5 @@ import Sphere.Differential
 import Sphere.Lie
 
 import Sphere.Operator
+import Sphere.Flatness
+import Sphere.Quantization
