@@ -60,3 +60,11 @@ def del : EOp →ₗ[ℂ] EOp := d_lift + {
   map_add' := by intros; noncomm_ring
   map_smul' := by intros; simp [smul_sub]
 }
+
+lemma del_tmul (x : Λ0) (y : Op) : del (x ⊗ₜ[ℂ] y) =
+  ((α : E) ⊗ₜ[ℂ] (1 : Op)) * ((der ρ x : E) ⊗ₜ[ℂ] y + (x : E) ⊗ₜ[ℂ] (commutator k3 y)) +
+  ((l : E) ⊗ₜ[ℂ] (1 : Op)) * ((der φ x : E) ⊗ₜ[ℂ] y + (x : E) ⊗ₜ[ℂ] (commutator kp y)) +
+  ((l_bar : E) ⊗ₜ[ℂ] (1 : Op)) * ((der φ_bar x : E) ⊗ₜ[ℂ] y + (x : E) ⊗ₜ[ℂ] (commutator km y)) := by
+  dsimp [del, d_lift, d_lift']
+  rw [d_eq_in_basis]
+  sorry
