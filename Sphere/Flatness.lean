@@ -29,7 +29,7 @@ lemma cast_mul_cast (x : ℂ) (y : ℂ) : (Algebra.cast x : ℂℏ) * (Algebra.c
 
 lemma cast'_mul_cast (x : ℕ) (y : ℂ) : (Algebra.cast x : ℂℏ) * (Algebra.cast y : ℂℏ) = Algebra.cast (x * y) := by simp
 
-theorem flat : d_lift A + A * A = 0 := by
+theorem connection_flat : d_lift A + A * A = 0 := by
   unfold A
   simp [add_mul, mul_add, d_lift, d_lift']
   simp [graded_comm Λ α l, graded_comm Λ α l_bar, graded_comm Λ l_bar l]
@@ -54,3 +54,9 @@ theorem flat : d_lift A + A * A = 0 := by
     simp only [OfNat.ofNat, C_nat_eq_cast]
     simp only [tmul_smul, smul_tmul, neg_tmul, tmul_neg, tmul_cast_smul, cast'_mul_cast]
     abel
+
+def del : EOp →ₗ[ℂ] EOp := d_lift + {
+  toFun := fun x => A * x - x * A
+  map_add' := by intros; noncomm_ring
+  map_smul' := by intros; simp [smul_sub]
+}
