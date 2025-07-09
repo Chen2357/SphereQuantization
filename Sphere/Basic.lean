@@ -39,6 +39,7 @@ lemma d_smul (c : Λ0) (x : E) [h : Homogeneous Λ x] : d (c • x) = (-1 : ℂ)
 
 -- Tangent space
 axiom T : Type
+-- We can define `T` as the dual `Λ0`-module of `Λ 1`
 @[instance] axiom T.AddGroup : AddCommGroup T
 @[instance] axiom T.Module : Module (Λ0) T
 instance : Module ℂ T := Module.compHom T (algebraMap ℂ (Λ0))
@@ -126,7 +127,7 @@ private lemma Int_smul_Complex_module {M : Type*} [AddCommGroup M] [Module ℂ M
 -- where the term of E has no ℕ, ℤ, ℂ, Λ0 factors
 --       the term of Λ0 has no ℕ, ℤ, ℂ factors
 -- The point is that we want to use the `ring` and `simp` tactic on `Λ0` which is a commutative ring.
--- It also setups for the use of the `collect` tactic.
+-- It also sets up for the use of the `collect` tactic.
 syntax "custom_rewrite" : tactic
 macro_rules
 | `(tactic| custom_rewrite) => `(tactic| simp only [smul_mul_assoc, mul_smul_comm, smul_smul, ←smul_assoc, Int_smul_Complex_module] <;> ring_nf <;> try simp [-neg_smul, -smul_assoc] <;> abel_nf <;> try simp only [smul_mul_assoc, mul_smul_comm, smul_smul, ←smul_assoc, Int_smul_Complex_module])
