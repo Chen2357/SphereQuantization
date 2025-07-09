@@ -64,9 +64,9 @@ axiom ι_mem {n : ℤ} (p : T) (x : Λ n) : ι p x ∈ Λ (n - 1)
     deg := Homogeneous.deg Λ x - 1
     mem := ι_mem p { val := x, property := Homogeneous.mem }
 
-axiom ι_mul (p : T) (x y : E) [hx : Homogeneous Λ x] [hy : Homogeneous Λ y] : ι p (x * y) = (ι p x) * y + (-1 : ℂ) ^ (hy.deg) • ((ι p y) * x)
+axiom ι_mul (p : T) (x y : E) [hx : Homogeneous Λ x] [hy : Homogeneous Λ y] : ι p (x * y) = (ι p x) * y + (if Even (hx.deg * hy.deg) then 1 else -1 : ℂ) • ((ι p y) * x)
 
--- Interior product
+-- Lie derivative
 def L : T →ₗ[ℂ] (E →ₗ[ℂ] E) := {
     toFun := fun x => {
         toFun := fun y => ι x (d y) + d (ι x y)
@@ -98,6 +98,10 @@ def der : T →ₗ[Λ0] (Λ0 →ₗ[ℂ] Λ0) := {
         simp
 }
 lemma ι_d (x : T) (y : Λ0) : ι x (d y) = der x y := rfl
+lemma der_mul (x : T) (y z : Λ0) : der x (y * z) = (der x y) * z + (der x z) * y := by
+    simp [der, d_mul, ι_mul]
+    simp [ι_d]
+    rfl
 
 axiom Lie : T →ₗ[ℂ] (T →ₗ[ℂ] T)
 axiom Lie_antisymm (x : T) (y : T) : Lie x y = (-1 : ℂ) • Lie y x
