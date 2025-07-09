@@ -66,6 +66,8 @@ def φ2 := x0 • px2 - x2 • px0 + x1 • px3 - x3 • px1
 def φ := (2⁻¹ : ℂ) • (φ1 - Complex.I • φ2)
 def φ_bar := (2⁻¹ : ℂ) • (φ1 + Complex.I • φ2)
 
+axiom d_eq_in_basis (f : Λ0) : d f = (der ρ f) • α + (der φ f) • l + (der φ_bar f) • l_bar
+
 @[simp] lemma Lie00 : Lie px0 px0 = 0 := Lie_self px0
 @[simp] axiom Lie01 : Lie px0 px1 = 0
 @[simp] axiom Lie02 : Lie px0 px2 = 0
