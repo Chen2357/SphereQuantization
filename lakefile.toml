@@ -1,15 +1,11 @@
-name = "«Sphere»"
+name = "Sphere"
 version = "0.1.0"
-keywords = ["math"]
-defaultTargets = ["«Sphere»"]
+defaultTargets = ["Sphere"]
 
-[leanOptions]
-pp.unicode.fun = true # pretty-prints `fun a ↦ b`
-autoImplicit = false
+[[lean_lib]]
+name = "Sphere"
 
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-
-[[lean_lib]]
-name = "«Sphere»"
+rev = "v4.21.0"

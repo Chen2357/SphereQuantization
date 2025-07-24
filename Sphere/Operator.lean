@@ -184,8 +184,7 @@ theorem commutator_kp_km : commutator kp km = (Algebra.cast (Complex.I) : ℂℏ
   nth_rewrite 2 [add_comm]
   rw [add_assoc]
   congr 1
-  simp [Algebra.cast, Algebra.algebraMap_eq_smul_one]
-
+  simp [Algebra.cast, Algebra.algebraMap_eq_smul_one, sq, mul_smul]
 
 lemma commutator_km_kp : commutator km kp = (Algebra.cast (-Complex.I) : ℂℏ) • k3 := by
   rw [commutator_comm]
