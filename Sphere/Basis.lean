@@ -12,23 +12,6 @@ axiom con : x0 * x0 + x1 * x1 + x2 * x2 + x3 * x3 = 1
 @[simp] lemma I_pow_two : Complex.I ^ 2 = -1 := by simp
 @[simp] lemma I_I : Complex.I * Complex.I = -1 := by simp
 
-syntax "linear_homogeneous" : tactic
-
-macro_rules
-| `(tactic| linear_homogeneous) => `(tactic| apply Homogeneous.mem)
-
-macro_rules
-| `(tactic| linear_homogeneous) => `(tactic| apply Homogeneous.mem_if; simp)
-
-macro_rules
-| `(tactic| linear_homogeneous) => `(tactic| apply Submodule.add_mem <;> linear_homogeneous)
-
-macro_rules
-| `(tactic| linear_homogeneous) => `(tactic| apply Submodule.sub_mem <;> linear_homogeneous)
-
-macro_rules
-| `(tactic| linear_homogeneous) => `(tactic| apply Submodule.smul_mem <;> linear_homogeneous)
-
 def l1 : Λ 1 := ⟨x0 • d x1 - x1 • d x0 + x3 • d x2 - x2 • d x3, by linear_homogeneous⟩
 def l2 : Λ 1 := ⟨x0 • d x2 - x2 • d x0 + x1 • d x3 - x3 • d x1, by linear_homogeneous⟩
 def α : Λ 1 := ⟨x0 • d x3 - x3 • d x0 + x2 • d x1 - x1 • d x2, by linear_homogeneous⟩

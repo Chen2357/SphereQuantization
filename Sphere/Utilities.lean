@@ -80,6 +80,23 @@ instance Homogeneous.sub  (x y : A) [Homogeneous 𝒜 x] [Homogeneous 𝒜 y] (h
         rw [h]
         exact Homogeneous.mem
 
+syntax "linear_homogeneous" : tactic
+
+macro_rules
+| `(tactic| linear_homogeneous) => `(tactic| apply Homogeneous.mem)
+
+macro_rules
+| `(tactic| linear_homogeneous) => `(tactic| apply Homogeneous.mem_if; simp)
+
+macro_rules
+| `(tactic| linear_homogeneous) => `(tactic| apply Submodule.add_mem <;> linear_homogeneous)
+
+macro_rules
+| `(tactic| linear_homogeneous) => `(tactic| apply Submodule.sub_mem <;> linear_homogeneous)
+
+macro_rules
+| `(tactic| linear_homogeneous) => `(tactic| apply Submodule.smul_mem <;> linear_homogeneous)
+
 end Homogeneous
 
 variable {R A : Type*} [CommRing R] [Semiring A] [Algebra R A]
