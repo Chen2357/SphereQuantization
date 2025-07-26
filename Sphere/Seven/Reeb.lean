@@ -13,7 +13,7 @@ lemma ι_R_dα : ι R (d α) = 0 := by
     abel_nf
     simp [subalgebra_smul_eq_cast_mul]
     abel
-  _ = _ := by simp [ν_eq_zero]
+  _ = 0 := by simp [ν_eq_zero]
 
 lemma ι_R_α : ι R α = 1 := by
   simp [R, α, ι_d]
