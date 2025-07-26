@@ -190,4 +190,13 @@ syntax "collect" term : tactic
 macro_rules
 | `(tactic| collect $x:term) => `(tactic| simp only [t0 $x:term, t1 $x:term, t2 $x:term, t3 $x:term])
 
+private lemma t0' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (t : M) (r : R) (s : R) : r • t + s • t = (r + s) • t := by rw [add_smul]
+private lemma t1' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (t : M) (r : R) (s : R) (y : M) : y + r • t + s • t = y + (r + s) • t := by rw [add_smul]; abel
+private lemma t2' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (t : M) (x : M) (r : R) (y : M) : x + r • t + y = x + y + r • t := by abel
+private lemma t3' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (t : M) (r : R) (x : M) : r • t + x = x + r • t := by rw [add_comm]
+
+syntax "collect'" term : tactic
+macro_rules
+| `(tactic| collect' $x:term) => `(tactic| simp only [t0' $x:term, t1' $x:term, t2' $x:term, t3' $x:term])
+
 end collect
