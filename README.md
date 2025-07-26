@@ -12,4 +12,4 @@
 - The calculation of the 10 fundamental vector fields induced by a basis for $\mathfrak{u}_2(\mathbb{H})$ is in [Seven/Fundamental.lean](./Sphere/Seven/Fundamental.lean).
 - The interior product between the fundamental vector fields with $\alpha$ and $d\alpha$ are calculated in [Seven/Alpha.lean](./Sphere/Seven/Alpha.lean) and [Seven/DifferentialAlpha.lean](./Sphere/Seven/Alpha.lean), respectively.
   The Lie derivatives of $\alpha$ along those vector fields are calculated in [Seven/Lie.lean](./Sphere/Seven/Lie.lean).
-- An explicit formula for the Reeb vector field as a $\mathbb{Z}$-linear combination of the fundamental vector fields is shown in [Seven/Reeb.lean](./Sphere/Seven/Reeb.lean).
+- An explicit formula for the Reeb vector field  is shown in [Seven/Reeb.lean](./Sphere/Seven/Reeb.lean).
