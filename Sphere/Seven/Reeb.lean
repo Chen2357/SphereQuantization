@@ -3,7 +3,9 @@ import Sphere.Seven.DifferentialAlpha
 
 noncomputable section
 
-def R := x[0] • px[3] - x[3] • px[0] - x[1] • px[2] + x[2] • px[1] + x[4] • px[7] - x[7] • px[4] - x[5] • px[6] + x[6] • px[5]
+def R :=
+  x[3] • px[0] - x[2] • px[1] + x[1] • px[2] - x[0] • px[3] +
+  x[7] • px[4] - x[6] • px[5] + x[5] • px[6] - x[4] • px[7]
 
 lemma ι_R_dα : ι R (d α) = 0 := by
   simp [R, α, d_smul, ι_mul, ι_d]
@@ -24,16 +26,16 @@ lemma ι_R_α : ι R α = 1 := by
   _ = x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7] := by abel
   _ = 1 := con
 
-private abbrev ι_ξ_k1_α'' : Λ0 := (4 : ℂ) • (x[4] * x[6] + x[5] * x[7])
-private abbrev ι_ξ_k2_α'' : Λ0 := (4 : ℂ) • (-(x[4] * x[5]) + x[6] * x[7])
-private abbrev ι_ξ_k3_α'' : Λ0 := (2 : ℂ) • (x[4] * x[4] - x[5] * x[5] - x[6] * x[6] + x[7] * x[7])
-private abbrev ι_ξ_j1_α'' : Λ0 := (4 : ℂ) • (x[0] * x[2] + x[1] * x[3])
-private abbrev ι_ξ_j2_α'' : Λ0 := (4 : ℂ) • (-(x[0] * x[1]) + x[2] * x[3])
-private abbrev ι_ξ_j3_α'' : Λ0 := (2 : ℂ) • (x[0] * x[0] - x[1] * x[1] - x[2] * x[2] + x[3] * x[3])
-private abbrev ι_ξ_p0_α'' : Λ0 := (2 : ℂ) • (x[0] * x[7] - x[1] * x[6] + x[2] * x[5] - x[3] * x[4])
-private abbrev ι_ξ_p1_α'' : Λ0 := (2 : ℂ) • (x[0] * x[6] + x[1] * x[7] + x[2] * x[4] + x[3] * x[5])
-private abbrev ι_ξ_p2_α'' : Λ0 := (2 : ℂ) • (-(x[0] * x[5]) - x[1] * x[4] + x[2] * x[7] + x[3] * x[6])
-private abbrev ι_ξ_p3_α'' : Λ0 := (2 : ℂ) • (x[0] * x[4] - x[1] * x[5] - x[2] * x[6] + x[3] * x[7])
+private abbrev ι_ξ_k1_α'' : Λ0 := (4 : ℂ) • (-(x[4] * x[6]) - (x[5] * x[7]))
+private abbrev ι_ξ_k2_α'' : Λ0 := (4 : ℂ) • (x[4] * x[5] - x[6] * x[7])
+private abbrev ι_ξ_k3_α'' : Λ0 := (2 : ℂ) • (-(x[4] * x[4]) + x[5] * x[5] + x[6] * x[6] - x[7] * x[7])
+private abbrev ι_ξ_j1_α'' : Λ0 := (4 : ℂ) • (-(x[0] * x[2]) - x[1] * x[3])
+private abbrev ι_ξ_j2_α'' : Λ0 := (4 : ℂ) • (x[0] * x[1] - x[2] * x[3])
+private abbrev ι_ξ_j3_α'' : Λ0 := (2 : ℂ) • (-(x[0] * x[0]) + x[1] * x[1] + x[2] * x[2] - x[3] * x[3])
+private abbrev ι_ξ_p0_α'' : Λ0 := (2 : ℂ) • (-(x[0] * x[7]) + x[1] * x[6] - x[2] * x[5] + x[3] * x[4])
+private abbrev ι_ξ_p1_α'' : Λ0 := (2 : ℂ) • (-(x[0] * x[6]) - x[1] * x[7] - x[2] * x[4] - x[3] * x[5])
+private abbrev ι_ξ_p2_α'' : Λ0 := (2 : ℂ) • (x[0] * x[5] + x[1] * x[4] - x[2] * x[7] - x[3] * x[6])
+private abbrev ι_ξ_p3_α'' : Λ0 := (2 : ℂ) • (-(x[0] * x[4]) + x[1] * x[5] + x[2] * x[6] - x[3] * x[7])
 
 private abbrev R' : T :=
 ι_ξ_p0_α'' • (ξ p0) +
@@ -63,7 +65,7 @@ private lemma R'_eq_R : R' = R := by
       neg_smul, one_smul, h, two_smul]
     ring_nf
     calc
-    _ = -(x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[3] := by
+    _ = (x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[3] := by
       ring
     _ = _ := by simp only [con, neg_mul, one_mul]
 
@@ -75,9 +77,9 @@ private lemma R'_eq_R : R' = R := by
       one_smul, neg_mul, neg_smul, h, two_smul]
     ring_nf
     calc
-    _ = (x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[2] := by
+    _ = -(x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[2] := by
       ring
-    _ = _ := by simp only [con, one_mul]
+    _ = _ := by simp only [con, neg_mul, one_mul]
 
   collect' px[2]
   congr 1
@@ -87,7 +89,7 @@ private lemma R'_eq_R : R' = R := by
       neg_smul, one_smul, h, two_smul]
     ring_nf
     calc
-    _ = -(x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[1] := by
+    _ = (x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[1] := by
       ring
     _ = _ := by simp only [con, neg_mul, one_mul]
 
@@ -99,9 +101,9 @@ private lemma R'_eq_R : R' = R := by
       one_smul, neg_mul, neg_smul, h, two_smul]
     ring_nf
     calc
-    _ = (x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[0] := by
+    _ = -(x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[0] := by
       ring
-    _ = _ := by simp only [con, one_mul]
+    _ = _ := by simp only [con, neg_mul, one_mul]
 
   collect' px[4]
   congr 1
@@ -111,7 +113,7 @@ private lemma R'_eq_R : R' = R := by
       neg_smul, one_smul, h, two_smul]
     ring_nf
     calc
-    _ = -(x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[7] := by
+    _ = (x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[7] := by
       ring
     _ = _ := by simp only [con, neg_mul, one_mul]
 
@@ -123,9 +125,9 @@ private lemma R'_eq_R : R' = R := by
       one_smul, neg_mul, neg_smul, h, two_smul]
     ring_nf
     calc
-    _ = (x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[6] := by
+    _ = -(x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[6] := by
       ring
-    _ = _ := by simp only [con, one_mul]
+    _ = _ := by simp only [con, neg_mul, one_mul]
 
   collect' px[6]
   congr 1
@@ -135,7 +137,7 @@ private lemma R'_eq_R : R' = R := by
       neg_smul, one_smul, h, two_smul]
     ring_nf
     calc
-    _ = -(x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[5] := by
+    _ = (x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[5] := by
       ring
     _ = _ := by simp only [con, neg_mul, one_mul]
 
@@ -145,9 +147,9 @@ private lemma R'_eq_R : R' = R := by
     neg_mul, neg_smul, h, two_smul]
   ring_nf
   calc
-  _ = (x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[4] := by
+  _ = -(x[0] * x[0] + x[1] * x[1] + x[2] * x[2] + x[3] * x[3] + x[4] * x[4] + x[5] * x[5] + x[6] * x[6] + x[7] * x[7]) * x[4] := by
     ring
-  _ = _ := by simp only [con, one_mul]
+  _ = _ := by simp only [con, neg_mul, one_mul]
 
 lemma R_eq : R =
   ((2 : ℂ) • ι_ξ_p0_α') • (ξ p0) +
