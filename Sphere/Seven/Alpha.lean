@@ -30,6 +30,7 @@ lemma ι_ξ_j2_α : ι (ξ j2) α = -(x[0] * x[1]) + x[2] * x[3] := by
   simp [ξ_j2, α, ι_d]
   simp [subalgebra_smul_eq_cast_mul]
   norm_cast
+  simp [smul_add, smul_sub]
   ring_nf
   simp [mul_two, ←smul_add, ←two_smul ℂ, smul_smul]
 
@@ -69,6 +70,7 @@ lemma ι_ξ_p2_α : ι (ξ p2) α = -(x[0] * x[5]) - x[1] * x[4] + x[2] * x[7] +
 lemma ι_ξ_p3_α : ι (ξ p3) α = x[0] * x[4] - x[1] * x[5] - x[2] * x[6] + x[3] * x[7] := by
   simp [ξ_p3, α, ι_d]
   simp [subalgebra_smul_eq_cast_mul]
+  simp [smul_add, smul_sub]
   norm_cast
   ring_nf
   simp [mul_two, ←smul_add, ←two_smul ℂ, smul_smul]
