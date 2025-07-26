@@ -80,6 +80,10 @@ instance Homogeneous.sub  (x y : A) [Homogeneous 𝒜 x] [Homogeneous 𝒜 y] (h
         rw [h]
         exact Homogeneous.mem
 
+@[simp] instance Homogeneous.neg (x: A) [Homogeneous 𝒜 x]  : Homogeneous 𝒜 (-x) where
+    deg := deg 𝒜 x
+    mem := by apply Submodule.neg_mem; exact mem
+
 syntax "linear_homogeneous" : tactic
 
 macro_rules
@@ -96,6 +100,9 @@ macro_rules
 
 macro_rules
 | `(tactic| linear_homogeneous) => `(tactic| apply Submodule.smul_mem <;> linear_homogeneous)
+
+macro_rules
+| `(tactic| linear_homogeneous) => `(tactic| apply Submodule.neg_mem <;> linear_homogeneous)
 
 end Homogeneous
 
