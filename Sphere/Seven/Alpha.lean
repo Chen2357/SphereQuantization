@@ -19,7 +19,7 @@ lemma ι_ξ_k3_α : ι (ξ k3) α = (2⁻¹ : ℂ) • (x[4] * x[4] - x[5] * x[5
   simp [subalgebra_smul_eq_cast_mul, smul_add, smul_sub]
   abel
 
-lemma ι_ξ_j1_α : ι (ξ j1) α =  x[0] * x[2] + x[1] * x[3] := by
+lemma ι_ξ_j1_α : ι (ξ j1) α = x[0] * x[2] + x[1] * x[3] := by
   simp [ξ_j1, α, ι_d]
   simp [subalgebra_smul_eq_cast_mul]
   norm_cast
