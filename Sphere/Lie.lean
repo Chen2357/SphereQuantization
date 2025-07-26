@@ -55,3 +55,6 @@ theorem Lφφ_bar_eq : Lie φ φ_bar = Complex.I • ρ := by
   ring_nf
   simp
   ring
+
+theorem Lφα_eq : L φ α = -(Complex.I • l_bar) := by
+  simp [L, dα_eq, ι_mul]

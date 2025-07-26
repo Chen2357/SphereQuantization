@@ -3,18 +3,21 @@ import Sphere.Seven.DifferentialAlpha
 
 noncomputable section
 
-def R := 2 • (ξ j3) + 2 • (ξ k3)
+def R := x[0] • px[3] - x[3] • px[0] - x[1] • px[2] + x[2] • px[1] + x[4] • px[7] - x[7] • px[4] - x[5] • px[6] + x[6] • px[5]
 
 lemma ι_R_dα : ι R (d α) = 0 := by
-  simp [R, ι_ξ_j3_dα, ι_ξ_k3_dα]
+  simp [R, α, d_smul, ι_mul, ι_d]
   calc
   _ = -2 • ν := by
+    unfold ν
+    abel_nf
     simp [subalgebra_smul_eq_cast_mul]
     abel
   _ = _ := by simp [ν_eq_zero]
 
 lemma ι_R_α : ι R α = 1 := by
-  simp [R, ι_ξ_j3_α, ι_ξ_k3_α]
+  simp [R, α, ι_d]
+  simp only [subalgebra_smul_eq_cast_mul]
   simp [two_mul, ←two_smul ℂ, smul_smul]
   norm_cast
   calc

@@ -48,7 +48,7 @@ axiom px : Vector T 8
 def ξ (X : M) : T := ∑ i : Fin 8, (∑ j : Fin 8, (decomp (X *ᵥ basis[i]))[j] • (x[i] • px[j]))
 
 def α : Λ 1 := ⟨
-  x[0] • d x[3] - x[3] • d x[0] + x[1] • d x[2] - x[2] • d x[1] + x[4] • d x[7] - x[7] • d x[4] + x[5] • d x[6] - x[6] • d x[5],
+  x[0] • d x[3] - x[3] • d x[0] - x[1] • d x[2] + x[2] • d x[1] + x[4] • d x[7] - x[7] • d x[4] - x[5] • d x[6] + x[6] • d x[5],
   by linear_homogeneous
 ⟩
 
