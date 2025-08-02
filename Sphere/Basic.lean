@@ -1,5 +1,6 @@
 import Sphere.Utilities
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Algebra.Lie.Basic
 
 noncomputable section
 
@@ -40,9 +41,14 @@ lemma d_smul (c : Λ0) (x : E) [h : Homogeneous Λ x] : d (c • x) = (-1 : ℂ)
 -- Tangent space
 axiom T : Type
 -- We can define `T` as the dual `Λ0`-module of `Λ 1`
-@[instance] axiom T.AddGroup : AddCommGroup T
+-- @[instance] axiom T.AddGroup : AddCommGroup T
+@[instance] axiom T.LieRing : LieRing T
 @[instance] axiom T.Module : Module (Λ0) T
 instance : Module ℂ T := Module.compHom T (algebraMap ℂ (Λ0))
+axiom T.lie_smul (t : ℂ) (x y : T) : ⁅x, t • y⁆ = t • ⁅x, y⁆
+instance T.LieAlgebra : LieAlgebra ℂ T where
+    lie_smul := T.lie_smul
+@[instance] axiom T.LieModule : LieModule ℂ T T
 
 instance : SMulCommClass ℂ (Λ0) T where
     smul_comm c x y := by
@@ -103,24 +109,11 @@ lemma der_mul (x : T) (y z : Λ0) : der x (y * z) = (der x y) * z + (der x z) * 
     simp [ι_d]
     rfl
 
-axiom Lie : T →ₗ[ℂ] (T →ₗ[ℂ] T)
-axiom Lie_antisymm (x : T) (y : T) : Lie x y = (-1 : ℂ) • Lie y x
-axiom Lie_smul (x : T) (y : Λ0) (z : T) : Lie x (y • z) = (der x y) • z + y • Lie x z
-
-lemma smul_Lie (x : Λ0) (y : T) (z : T) : Lie (x • y) z = (-(der z x)) • y + x • Lie y z := by
-    rw [Lie_antisymm, Lie_smul, smul_add]
-    congr 1
-    simp
-    rw [Lie_antisymm]
-    simp
-
-@[simp] lemma Lie_self (x : T) : Lie x x = 0 := by
-    have := Lie_antisymm x x
-    have : (2 : ℂ) • Lie x x = 0 := by
-        rw [two_smul]
-        nth_rewrite 1 [this]
-        simp
-    exact (smul_eq_zero_iff_right (by simp)).mp this
+axiom lie_Λ0smul (x : T) (y : Λ0) (z : T) : ⁅x, y • z⁆ = (der x y) • z + y • ⁅x, z⁆
+lemma Λ0smul_lie (x : Λ0) (y : T) (z : T) : ⁅x • y, z⁆ = (-(der z x)) • y + x • ⁅y, z⁆ := by
+    rw [←lie_skew, lie_Λ0smul]
+    simp only [neg_add_rev, neg_smul, ←smul_neg, lie_skew]
+    abel
 
 -- custom_rewrite
 

@@ -16,48 +16,50 @@ theorem Lφl_eq : L φ l = (2 * Complex.I) • α := by
 theorem Lφ_bar_l_bar_eq : L φ_bar l_bar = (-2 * Complex.I) • α := by
   simp [L, dl_bar_eq, ι_mul]
 
-lemma Lφ1φ2_eq : Lie φ1 φ2 = 2 • ρ := by
+lemma Lφ1φ2_eq : ⁅φ1, φ2⁆ = (2 : ℂ) • ρ := by
   unfold φ1 φ2 ρ
-  simp [Lie_smul, smul_Lie]
+  simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie]
+  simp
+  norm_cast
   abel_nf
 
-theorem Lρφ1_eq : Lie ρ φ1 = 2 • φ2 := by
+theorem Lρφ1_eq : ⁅ρ, φ1⁆ = (2 : ℂ) • φ2 := by
   unfold φ1 φ2 ρ
-  simp [Lie_smul, smul_Lie]
+  simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie]
+  simp
+  norm_cast
   abel_nf
 
-theorem Lρφ2_eq : Lie ρ φ2 = -2 • φ1 := by
+theorem Lρφ2_eq : ⁅ρ, φ2⁆ = (-2 : ℂ) • φ1 := by
   unfold φ1 φ2 ρ
-  simp [Lie_smul, smul_Lie]
+  simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie]
+  simp
+  norm_cast
   abel_nf
 
-theorem Lρφ_eq : Lie ρ φ = (2 * Complex.I) • φ := by
+theorem Lρφ_eq : ⁅ρ, φ⁆ = (2 * Complex.I) • φ := by
   unfold φ
-  simp [Lie_smul, smul_Lie, Lρφ1_eq, Lρφ2_eq, smul_sub]
-  custom_rewrite
-  simp
-  abel
-
-theorem Lρφ_bar_eq : Lie ρ φ_bar = (-2 * Complex.I) • φ_bar := by
-  unfold φ_bar
-  simp [Lie_smul, smul_Lie, Lρφ1_eq, Lρφ2_eq, smul_sub]
-  custom_rewrite
-  simp
-  abel
-
-theorem Lφφ_bar_eq : Lie φ φ_bar = Complex.I • ρ := by
-  unfold φ φ_bar
-  simp [Lie_smul, smul_Lie, Lφ1φ2_eq, smul_sub]
-  rw [Lie_antisymm, Lφ1φ2_eq]
-  custom_rewrite
-  collect ρ
-  congr
+  simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie, lie_smul, smul_lie, Lρφ1_eq, Lρφ2_eq]
+  simp [smul_smul]
   ring_nf
-  simp
-  ring
+  simp [smul_sub, smul_smul]
+  abel
 
-theorem Lφα_eq : L φ α = -(Complex.I • l_bar) := by
-  simp [L, dα_eq, ι_mul]
+theorem Lρφ_bar_eq : ⁅ρ, φ_bar⁆ = (-2 * Complex.I) • φ_bar := by
+  unfold φ_bar
+  simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie, lie_smul, smul_lie, Lρφ1_eq, Lρφ2_eq]
+  simp [smul_smul]
+  ring_nf
+  simp [smul_sub, smul_smul]
+  abel
 
-theorem Lφ_bar_α_eq : L φ_bar α = Complex.I • l := by
-  simp [L, dα_eq, ι_mul]
+theorem Lφφ_bar_eq : ⁅φ, φ_bar⁆ = Complex.I • ρ := by
+  unfold φ φ_bar
+  simp [lie_Λ0smul, Λ0smul_lie]
+  rw [←lie_skew]
+  simp only [Lφ1φ2_eq, smul_smul, smul_neg]
+  ring_nf
+  abel_nf
+  calc
+  _ = (2 : ℂ) • (Complex.I * (1 / 2)) • ρ := by norm_cast
+  _ = _ := by rw [smul_smul]; ring_nf
