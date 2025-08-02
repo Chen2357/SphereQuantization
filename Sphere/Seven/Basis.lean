@@ -1,6 +1,7 @@
 import Sphere.Basic
 import Mathlib.Algebra.Quaternion
 import Mathlib.Data.Matrix.Mul
+import Mathlib.Algebra.Lie.Matrix
 
 noncomputable section
 
@@ -25,27 +26,75 @@ def k3 : M := ![![0, 0], ![0, ⟨0, 0, 0, 2⁻¹⟩]]
 
 abbrev S := (Fin 2) → ℍ[ℂ]
 
-abbrev basis : Vector S 8 := ⟨#[
-  ![⟨1, 0, 0, 0⟩, 0],
-  ![⟨0, 1, 0, 0⟩, 0],
-  ![⟨0, 0, 1, 0⟩, 0],
-  ![⟨0, 0, 0, 1⟩, 0],
-  ![0, ⟨1, 0, 0, 0⟩],
-  ![0, ⟨0, 1, 0, 0⟩],
-  ![0, ⟨0, 0, 1, 0⟩],
-  ![0, ⟨0, 0, 0, 1⟩],
-], rfl⟩
+@[simp] abbrev basis (i : Fin 8) : S :=
+  match i with
+  | 0 => ![⟨1, 0, 0, 0⟩, 0]
+  | 1 => ![⟨0, 1, 0, 0⟩, 0]
+  | 2 => ![⟨0, 0, 1, 0⟩, 0]
+  | 3 => ![⟨0, 0, 0, 1⟩, 0]
+  | 4 => ![0, ⟨1, 0, 0, 0⟩]
+  | 5 => ![0, ⟨0, 1, 0, 0⟩]
+  | 6 => ![0, ⟨0, 0, 1, 0⟩]
+  | 7 => ![0, ⟨0, 0, 0, 1⟩]
 
-@[simp] def decomp (s : S) : Vector ℂ 8 := ⟨#[
-  (s 0).re, (s 0).imI, (s 0).imJ, (s 0).imK,
-  (s 1).re, (s 1).imI, (s 1).imJ, (s 1).imK
-], rfl⟩
+abbrev decomp : S →ₗ[ℂ] (Fin 8) → ℂ := {
+  toFun := fun s i => match i with
+    | 0 => (s 0).re
+    | 1 => (s 0).imI
+    | 2 => (s 0).imJ
+    | 3 => (s 0).imK
+    | 4 => (s 1).re
+    | 5 => (s 1).imI
+    | 6 => (s 1).imJ
+    | 7 => (s 1).imK
+  map_add' := by
+    intro x y
+    ext i
+    fin_cases i
+    all_goals simp
+  map_smul' := by
+    intro c x
+    ext i
+    fin_cases i
+    all_goals simp
+}
 
 axiom x : Vector Λ0 8
 axiom px : Vector T 8
 @[simp] axiom der_px_x (n m : ℕ) (h1 : n < 8) (h2 : m < 8) : der px[n] x[m] = if n = m then 1 else 0
+@[simp] axiom lie_px_px (n m : ℕ) (h1 : n < 8) (h2 : m < 8) : ⁅px[n], px[m]⁆ = 0
 
-def ξ (X : M) : T := ∑ i : Fin 8, (∑ j : Fin 8, (decomp (X *ᵥ basis[i]))[j] • (x[i] • px[j]))
+-- def ξ (X : M) : T := ∑ i : Fin 8, (∑ j : Fin 8, (decomp (X *ᵥ (basis i))) j • (x[i] • px[j]))
+
+def ξ : M →ₗ[ℂ] T := {
+  toFun := fun X => ∑ i : Fin 8, (∑ j : Fin 8, (decomp (X *ᵥ (basis i))) j • (x[i] • px[j]))
+  map_add' := by
+    intros X Y
+    rw [←Finset.sum_add_distrib]
+    congr 1
+    ext i
+    rw [←Finset.sum_add_distrib]
+    congr 1
+    ext j
+    rw [←add_smul]
+    congr
+    rw [add_mulVec]
+    fin_cases j
+    all_goals simp
+  map_smul' := by
+    intros c X
+    rw [Finset.smul_sum]
+    congr 1
+    ext i
+    rw [Finset.smul_sum]
+    congr 1
+    ext j
+    rw [←smul_assoc ((RingHom.id ℂ) c)]
+    congr
+    rw [smul_mulVec_assoc c X]
+    fin_cases j
+    all_goals simp
+}
 
 def α : Λ 1 := ⟨
   x[3] • d x[0] - x[2] • d x[1] + x[1] • d x[2] - x[0] • d x[3] +
