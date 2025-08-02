@@ -64,8 +64,6 @@ axiom px : Vector T 8
 @[simp] axiom der_px_x (n m : ℕ) (h1 : n < 8) (h2 : m < 8) : der px[n] x[m] = if n = m then 1 else 0
 @[simp] axiom lie_px_px (n m : ℕ) (h1 : n < 8) (h2 : m < 8) : ⁅px[n], px[m]⁆ = 0
 
--- def ξ (X : M) : T := ∑ i : Fin 8, (∑ j : Fin 8, (decomp (X *ᵥ (basis i))) j • (x[i] • px[j]))
-
 def ξ : M →ₗ[ℂ] T := {
   toFun := fun X => ∑ i : Fin 8, (∑ j : Fin 8, (decomp (X *ᵥ (basis i))) j • (x[i] • px[j]))
   map_add' := by
