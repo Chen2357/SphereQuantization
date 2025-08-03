@@ -70,30 +70,18 @@ def ξ : M →ₗ[ℂ] T := {
   toFun := fun X => ∑ i : Fin 8, (∑ j : Fin 8, (decomp (X *ᵥ (basis i))) j • (x[i] • px[j]))
   map_add' := by
     intros X Y
-    rw [←Finset.sum_add_distrib]
-    congr 1
-    ext i
-    rw [←Finset.sum_add_distrib]
-    congr 1
-    ext j
-    rw [←add_smul]
+    conv_lhs =>
+      simp [add_mulVec, -basis, -decomp, Finset.sum_add_distrib, add_smul]
     congr
-    rw [add_mulVec]
-    fin_cases j
-    all_goals simp
   map_smul' := by
     intros c X
-    rw [Finset.smul_sum]
-    congr 1
-    ext i
-    rw [Finset.smul_sum]
-    congr 1
-    ext j
-    rw [←smul_assoc ((RingHom.id ℂ) c)]
-    congr
-    rw [smul_mulVec_assoc c X]
-    fin_cases j
-    all_goals simp
+    conv_lhs =>
+      arg 2; intro i
+      arg 2; intro j
+      rw [smul_mulVec_assoc c X, LinearMap.map_smul]
+    conv_rhs =>
+      simp [-basis, -decomp, Finset.smul_sum, ←smul_assoc]
+    simp
 }
 
 def α : Λ 1 := ⟨
