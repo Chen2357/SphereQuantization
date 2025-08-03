@@ -26,7 +26,8 @@ def k3 : M := ![![0, 0], ![0, ⟨0, 0, 0, 2⁻¹⟩]]
 
 abbrev S := (Fin 2) → ℍ[ℂ]
 
-@[simp] abbrev basis (i : Fin 8) : S :=
+@[simp]
+abbrev basis (i : Fin 8) : S :=
   match i with
   | 0 => ![⟨1, 0, 0, 0⟩, 0]
   | 1 => ![⟨0, 1, 0, 0⟩, 0]
@@ -37,7 +38,8 @@ abbrev S := (Fin 2) → ℍ[ℂ]
   | 6 => ![0, ⟨0, 0, 1, 0⟩]
   | 7 => ![0, ⟨0, 0, 0, 1⟩]
 
-abbrev decomp : S →ₗ[ℂ] (Fin 8) → ℂ := {
+@[simp]
+def decomp : S →ₗ[ℂ] (Fin 8) → ℂ := {
   toFun := fun s i => match i with
     | 0 => (s 0).re
     | 1 => (s 0).imI
