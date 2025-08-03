@@ -271,22 +271,22 @@ end lie_ξ_p_ξ_j
 
 section lie_ξ_p_ξ_p
 
-lemma lie_ξ_p1_ξ_p2 : ⁅ξ p1, ξ p2⁆ = ξ (-j3 - k3) := by
+lemma lie_ξ_p1_ξ_p2 : ⁅ξ p1, ξ p2⁆ = -ξ j3 - ξ k3 := by
   simp [lie_ξ, lie_p2_p1]
 
-lemma lie_ξ_p2_ξ_p1 : ⁅ξ p2, ξ p1⁆ = ξ (j3 + k3) := by
+lemma lie_ξ_p2_ξ_p1 : ⁅ξ p2, ξ p1⁆ = ξ j3 + ξ k3 := by
   simp [lie_ξ, lie_p1_p2]
 
-lemma lie_ξ_p1_ξ_p3 : ⁅ξ p1, ξ p3⁆ = ξ (j2 + k2) := by
+lemma lie_ξ_p1_ξ_p3 : ⁅ξ p1, ξ p3⁆ = ξ j2 + ξ k2 := by
   simp [lie_ξ, lie_p3_p1]
 
-lemma lie_ξ_p3_ξ_p1 : ⁅ξ p3, ξ p1⁆ = ξ (-j2 - k2) := by
+lemma lie_ξ_p3_ξ_p1 : ⁅ξ p3, ξ p1⁆ = -ξ j2 - ξ k2 := by
   simp [lie_ξ, lie_p1_p3]
 
-lemma lie_ξ_p2_ξ_p3 : ⁅ξ p2, ξ p3⁆ = ξ (-j1 - k1) := by
+lemma lie_ξ_p2_ξ_p3 : ⁅ξ p2, ξ p3⁆ = -ξ j1 - ξ k1 := by
   simp [lie_ξ, lie_p3_p2]
 
-lemma lie_ξ_p3_ξ_p2 : ⁅ξ p3, ξ p2⁆ = ξ (j1 + k1) := by
+lemma lie_ξ_p3_ξ_p2 : ⁅ξ p3, ξ p2⁆ = ξ j1 + ξ k1 := by
   simp [lie_ξ, lie_p2_p3]
 
 end lie_ξ_p_ξ_p
