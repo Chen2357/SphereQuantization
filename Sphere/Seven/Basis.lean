@@ -26,7 +26,6 @@ def k3 : M := ![![0, 0], ![0, ⟨0, 0, 0, 2⁻¹⟩]]
 
 abbrev S := (Fin 2) → ℍ[ℂ]
 
-@[simp]
 abbrev basis (i : Fin 8) : S :=
   match i with
   | 0 => ![⟨1, 0, 0, 0⟩, 0]
@@ -38,7 +37,6 @@ abbrev basis (i : Fin 8) : S :=
   | 6 => ![0, ⟨0, 0, 1, 0⟩]
   | 7 => ![0, ⟨0, 0, 0, 1⟩]
 
-@[simp]
 def decomp : S →ₗ[ℂ] (Fin 8) → ℂ := {
   toFun := fun s i => match i with
     | 0 => (s 0).re
@@ -71,7 +69,7 @@ def ξ : M →ₗ[ℂ] T := {
   map_add' := by
     intros X Y
     conv_lhs =>
-      simp [add_mulVec, -basis, -decomp, Finset.sum_add_distrib, add_smul]
+      simp [add_mulVec, Finset.sum_add_distrib, add_smul]
     congr
   map_smul' := by
     intros c X
@@ -80,7 +78,7 @@ def ξ : M →ₗ[ℂ] T := {
       arg 2; intro j
       rw [smul_mulVec_assoc c X, LinearMap.map_smul]
     conv_rhs =>
-      simp [-basis, -decomp, Finset.smul_sum, ←smul_assoc]
+      simp [Finset.smul_sum, ←smul_assoc]
     simp
 }
 

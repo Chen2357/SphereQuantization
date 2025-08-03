@@ -4,7 +4,7 @@ import Sphere.Seven.Commutation
 open Matrix
 
 private lemma h' (X : S) (Y : M) : ∑ k, decomp (X) k • (Y *ᵥ (basis k)) = Y *ᵥ X := by
-  simp [Finset.sum]
+  simp [Finset.sum, decomp, basis]
   ext1 j
   fin_cases j
   all_goals simp [mulVec, vecHead, vecTail, mul_apply]
@@ -26,14 +26,13 @@ private lemma h (i j : Fin 8) (X Y : M) : ∑ k, decomp (X *ᵥ (basis i)) k * d
 
 lemma lie_ξ (x y : M) : ⁅ξ x, ξ y⁆ = ξ ⁅y, x⁆ := by
   conv_lhs =>
-    simp [ξ, -basis, -decomp]
+    simp [ξ]
     simp only [lie_sum, sum_lie]
     arg 2; intro i
     arg 2; intro j
     arg 2; intro i'
     arg 2; intro j'
-    simp only [lie_smul, smul_lie, Λ0smul_lie, lie_Λ0smul, lie_px_px]
-    simp [-basis, -decomp]
+    simp [lie_smul, smul_lie, Λ0smul_lie, lie_Λ0smul, lie_px_px]
 
   conv_lhs =>
     simp only [Finset.sum_add_distrib]
@@ -43,17 +42,17 @@ lemma lie_ξ (x y : M) : ⁅ξ x, ξ y⁆ = ξ ⁅y, x⁆ := by
       arg 2; intro i'
       rw [Finset.sum_eq_single_of_mem i (by apply Finset.mem_univ) (by
         intro k _ hk
-        simp [-basis, -decomp]
+        simp
         intro h
         refine absurd ?_ hk
         exact Fin.eq_of_val_eq h
       )]
-      . simp [-basis, -decomp]
+      . simp
     . arg 2; intro i
       arg 2; intro j
       rw [Finset.sum_eq_single_of_mem j (by apply Finset.mem_univ) (by
         intro k _ hk
-        simp [-basis, -decomp]
+        simp
         intro h
         refine absurd ?_ hk
         exact Fin.eq_of_val_eq (Eq.symm h)
@@ -69,9 +68,9 @@ lemma lie_ξ (x y : M) : ⁅ξ x, ξ y⁆ = ξ ⁅y, x⁆ := by
     simp only [Finset.sum_neg_distrib, ←sub_eq_add_neg]
 
   conv_rhs =>
-    simp [ξ, -basis, -decomp]
+    simp [ξ]
     rw [Ring.lie_def]
-    simp [sub_mulVec, -basis, -decomp, ←Finset.sum_neg_distrib]
+    simp [sub_mulVec, ←Finset.sum_neg_distrib]
     arg 2; intro i
     arg 2; intro j
     rw [sub_smul]
