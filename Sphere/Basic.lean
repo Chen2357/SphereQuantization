@@ -1,6 +1,7 @@
 import Sphere.Utilities
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.LinearAlgebra.Dual.Defs
 
 noncomputable section
 
