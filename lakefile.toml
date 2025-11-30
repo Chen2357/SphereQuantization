@@ -8,4 +8,9 @@ name = "Sphere"
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.21.0"
+rev = "v4.24.0"
+
+[[require]]
+name = "Cochain"
+git = "https://github.com/Chen2357/Cochain"
+rev = "main"
