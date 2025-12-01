@@ -94,3 +94,47 @@
 --     custom_rewrite
 --     ring_nf
 --     abel
+
+-- The theorems below express d Ω.H', d Ω.X', d Ω.Y' in terms of products of Ω.H', Ω.X', Ω.Y'.
+-- These are derived from the relationships:
+--   H' = I * α         (so α = -I * H')
+--   X' = l1 + I * l2   (which equals l)
+--   Y' = -l1 + I * l2  (which equals -l_bar)
+
+-- theorem dH'_eq : d Ω.H' = -Ω.X' * Ω.Y' := by
+--     unfold Ω.H' Ω.X' Ω.Y'
+--     simp [d_smul, smul_smul, smul_add, smul_sub]
+--     simp [mul_add, mul_sub, add_mul, sub_mul]
+--     rw [graded_comm Λ Ω.l2 Ω.l1]
+--     simp [l1_mul_l2_eq]
+--     simp [smul_smul, smul_add, smul_sub]
+--     ring_nf
+--     abel
+
+-- theorem dX'_eq : d Ω.X' = 2 • (Ω.X' * Ω.H') := by
+--     unfold Ω.X' Ω.H'
+--     simp [d_smul, smul_smul, smul_add, smul_sub]
+--     simp [mul_add, mul_sub, add_mul, sub_mul]
+--     simp [l1_mul_α_eq, l2_mul_α_eq]
+--     unfold Ω.l1 Ω.l2
+--     simp [d_smul, smul_smul, smul_add, smul_sub]
+--     ring_nf
+--     simp
+--     abel_nf
+--     custom_rewrite
+--     ring_nf
+--     abel
+
+-- theorem dY'_eq : d Ω.Y' = -2 • (Ω.Y' * Ω.H') := by
+--     unfold Ω.Y' Ω.H'
+--     simp [d_smul, smul_smul, smul_add, smul_sub]
+--     simp [mul_add, mul_sub, add_mul, sub_mul]
+--     simp [l1_mul_α_eq, l2_mul_α_eq]
+--     unfold Ω.l1 Ω.l2
+--     simp [d_smul, smul_smul, smul_add, smul_sub]
+--     ring_nf
+--     simp
+--     abel_nf
+--     custom_rewrite
+--     ring_nf
+--     abel
