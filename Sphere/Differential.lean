@@ -97,9 +97,9 @@
 
 -- The theorems below express d Ω.H', d Ω.X', d Ω.Y' in terms of products of Ω.H', Ω.X', Ω.Y'.
 -- These are derived from the relationships:
---   H' = I * α         (so α = -I * H')
---   X' = l1 + I * l2   (which equals l)
---   Y' = -l1 + I * l2  (which equals -l_bar)
+--   H' = Complex.I * α         (so α = -Complex.I * H')
+--   X' = l1 + Complex.I * l2   (which equals l)
+--   Y' = -l1 + Complex.I * l2  (which equals -l_bar)
 
 -- theorem dH'_eq : d Ω.H' = -Ω.X' * Ω.Y' := by
 --     unfold Ω.H' Ω.X' Ω.Y'
