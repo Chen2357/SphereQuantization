@@ -1,65 +1,93 @@
--- import Sphere.Duality
--- import Sphere.Differential
+import Sphere.Basis
 
--- theorem Lρα_eq : L ρ α = 0 := by
---   simp [L, dα_eq, ι_mul]
+namespace 𝒳
 
--- theorem Lρl : L ρ l = (-2 * Complex.I) • l := by
---   simp [L, dl_eq, ι_mul]
+syntax "lie_basis_px_eq" : tactic
+macro_rules
+| `(tactic| lie_basis_px_eq) => `(tactic|
+    simp [lier_smul, smul_add, smul_sub, ←smul_assoc];
+    abel_nf;
+    simp [-smul_assoc];
+    simp only [←neg_smul];
+    collect px 0;
+    congr 1;
+    ring_nf;
+    collect px 1;
+    congr 1;
+    ring_nf;
+    collect px 2;
+    congr 1;
+    ring_nf;
+    collect px 3;
+    congr 1;
+    ring_nf
+  )
 
--- theorem Lρl_bar : L ρ l_bar = (2 * Complex.I) • l_bar := by
---   simp [L, dl_bar_eq, ι_mul]
+@[simp]
+lemma lie_ρ_φ1 : ⁅ρ, φ1⁆ = (2 : ℤ) • φ2 := by
+  unfold ρ φ1 φ2
+  lie_basis_px_eq
 
--- theorem Lφl_eq : L φ l = (2 * Complex.I) • α := by
---   simp [L, dl_eq, ι_mul]
+@[simp]
+lemma lie_φ1_ρ : ⁅φ1, ρ⁆ = -2 • φ2 := by
+  rw [←lie_skew]
+  simp
 
--- theorem Lφ_bar_l_bar_eq : L φ_bar l_bar = (-2 * Complex.I) • α := by
---   simp [L, dl_bar_eq, ι_mul]
+@[simp]
+lemma lie_ρ_φ2 : ⁅ρ, φ2⁆ = -2 • φ1 := by
+  unfold ρ φ1 φ2
+  lie_basis_px_eq
 
--- lemma Lφ1φ2_eq : ⁅φ1, φ2⁆ = (2 : ℂ) • ρ := by
---   unfold φ1 φ2 ρ
---   simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie]
---   simp
---   norm_cast
---   abel_nf
+@[simp]
+lemma lie_φ2_ρ : ⁅φ2, ρ⁆ = (2 : ℤ) • φ1 := by
+  rw [←lie_skew]
+  simp
 
--- theorem Lρφ1_eq : ⁅ρ, φ1⁆ = (2 : ℂ) • φ2 := by
---   unfold φ1 φ2 ρ
---   simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie]
---   simp
---   norm_cast
---   abel_nf
+@[simp]
+lemma lie_φ1_φ2 : ⁅φ1, φ2⁆ = (2 : ℤ) • ρ := by
+  unfold ρ φ1 φ2
+  lie_basis_px_eq
 
--- theorem Lρφ2_eq : ⁅ρ, φ2⁆ = (-2 : ℂ) • φ1 := by
---   unfold φ1 φ2 ρ
---   simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie]
---   simp
---   norm_cast
---   abel_nf
+@[simp]
+lemma lie_φ2_φ1 : ⁅φ2, φ1⁆ = -2 • ρ := by
+  rw [←lie_skew]
+  simp
 
--- theorem Lρφ_eq : ⁅ρ, φ⁆ = (2 * Complex.I) • φ := by
---   unfold φ
---   simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie, lie_smul, smul_lie, Lρφ1_eq, Lρφ2_eq]
---   simp [smul_smul]
---   ring_nf
---   simp [smul_sub, smul_smul]
---   abel
+@[simp]
+theorem lie_H_X : ⁅H, X⁆ = (2 : ℤ) • X := by
+  unfold H X
+  simp [←smul_assoc, smul_comm (N:=ℤ), -neg_smul]
+  ring_nf
+  simp
+  abel
 
--- theorem Lρφ_bar_eq : ⁅ρ, φ_bar⁆ = (-2 * Complex.I) • φ_bar := by
---   unfold φ_bar
---   simp only [lie_Λ0smul, Λ0smul_lie, lie_add, add_lie, lie_sub, sub_lie, lie_smul, smul_lie, Lρφ1_eq, Lρφ2_eq]
---   simp [smul_smul]
---   ring_nf
---   simp [smul_sub, smul_smul]
---   abel
+@[simp]
+theorem lie_X_H : ⁅X, H⁆ = -2 • X := by
+  rw [←lie_skew]
+  simp
 
--- theorem Lφφ_bar_eq : ⁅φ, φ_bar⁆ = Complex.I • ρ := by
---   unfold φ φ_bar
---   simp [lie_Λ0smul, Λ0smul_lie]
---   rw [←lie_skew]
---   simp only [Lφ1φ2_eq, smul_smul, smul_neg]
---   ring_nf
---   abel_nf
---   calc
---   _ = (2 : ℂ) • (Complex.I * (1 / 2)) • ρ := by norm_cast
---   _ = _ := by rw [smul_smul]; ring_nf
+@[simp]
+theorem lie_H_Y : ⁅H, Y⁆ = -2 • Y := by
+  unfold H Y
+  simp [←smul_assoc, smul_comm (N:=ℤ), -neg_smul]
+  ring_nf
+  simp
+
+@[simp]
+theorem lie_Y_H : ⁅Y, H⁆ = (2 : ℤ) • Y := by
+  rw [←lie_skew]
+  simp
+
+@[simp]
+theorem lie_X_Y : ⁅X, Y⁆ = H := by
+  unfold H X Y
+  simp [←smul_assoc, smul_comm (N:=ℤ)]
+  simp only [←neg_smul, ←sub_smul, smul_smul]
+  ring_nf
+
+@[simp]
+theorem lie_Y_X : ⁅Y, X⁆ = -H := by
+  rw [←lie_skew]
+  simp
+
+end 𝒳

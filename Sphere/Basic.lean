@@ -1,131 +1,129 @@
--- import Sphere.Utilities
--- import Mathlib.RingTheory.GradedAlgebra.Basic
--- import Mathlib.Algebra.Lie.Basic
--- import Mathlib.LinearAlgebra.Dual.Defs
+import Mathlib.Geometry.Manifold.Instances.Sphere
+import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+import LieRinehart.Derivation
+import Cochain.Cartan
+import Sphere.Util.Sum
 
--- noncomputable section
+open TensorProduct
+open Cochain
+open AlternatingMap
+open DirectSum
 
--- -- Exterior algebra
--- axiom E : Type
--- @[instance] axiom E.Ring: Ring E
--- @[instance] axiom E.Algebra : Algebra ℂ E
+noncomputable section
 
--- axiom Λ : ℤ → Submodule ℂ E
--- @[instance] axiom Λ.GradedCommAlgebra : GradedCommAlgebra Λ
+abbrev S3 := Metric.sphere (0 : EuclideanSpace ℝ (Fin 4)) 1
 
--- abbrev Λ0 := SetLike.GradeZero.subalgebra Λ
+@[irreducible] def 𝒜 := ℂ ⊗[ℝ] ContMDiffMap (modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin 3))) (modelWithCornersSelf ℝ ℝ) S3 ℝ ⊤
 
--- axiom d : E →ₗ[ℂ] E
--- axiom d_mem {n : ℤ} (x : Λ n) : d x ∈ Λ (n + 1)
+instance : CommRing 𝒜 := by unfold 𝒜; infer_instance
+instance : Algebra ℂ 𝒜 := by unfold 𝒜; infer_instance
 
--- @[simp] instance (x : E) [Homogeneous Λ x] : Homogeneous Λ (d x) where
---     deg := Homogeneous.deg Λ x + 1
---     mem := d_mem { val := x, property := Homogeneous.mem }
+abbrev 𝒳 := Derivation ℂ 𝒜 𝒜
+abbrev Ω := Cochain 𝒜 𝒳 𝒜
 
--- @[simp] axiom d_d (x : E) : d (d x) = 0
--- axiom d_mul {n m : ℤ} (x : Λ n) (y : Λ m) : d (x * y) = (-1 : ℂ)^(m) • y * (d x) + (-1 : ℂ)^(n) • x * (d y)
--- @[simp] axiom d_one : d 1 = 0
+instance : Module ℂ Ω := by infer_instance
 
--- lemma d_smul (c : Λ0) (x : E) [h : Homogeneous Λ x] : d (c • x) = (-1 : ℂ)^(h.deg) • (x * (d c)) +  c • (d x) := by
---     show d (c * x) = (-1 : ℂ)^(h.deg) • (x * (d c)) +  c * (d x)
---     rw [d_mul { val := c, property := Homogeneous.mem } { val := x, property := h.mem }]
---     simp
--- @[simp] lemma d_const (x : ℂ) : d (algebraMap ℂ E x) = 0 := by
---     have : algebraMap ℂ E x = x • (1 : E) := Algebra.algebraMap_eq_smul_one x
---     rw [this]
---     simp
+def fx (i : Fin 4) : 𝒜 := by
+  unfold 𝒜
+  exact 1 ⊗ₜ {
+    val x := (x : EuclideanSpace ℝ (Fin 4)) i
+    property := by
+      have : (fun (x : S3) => (x : EuclideanSpace ℝ (Fin 4)) i) = (fun x => x i) ∘ (fun (x : S3) => (x : EuclideanSpace ℝ (Fin 4))) := by
+        ext; simp
+      rw [this]
+      apply ContDiff.comp_contMDiff
+      exact contDiff_piLp_apply 2
+      have : Fact (Module.finrank ℝ (EuclideanSpace ℝ (Fin 4)) = 3 + 1) := by simp; trivial
+      exact contMDiff_coe_sphere
+  }
 
--- @[simp] lemma mul_self_d (x : Λ0) : (d x) * (d x) = 0 := by
---     rw [mul_self Λ]
---     simp
+@[simp] theorem sum_eq_one : ∑ i, fx i ^ 2 = 1 := by
+  unfold 𝒜 fx id
+  simp [Finset.sum, ←TensorProduct.tmul_add]
+  congr
+  ext x
+  simp
+  rcases x with ⟨x, hx⟩
+  simp [norm] at hx
+  have := congr_arg (fun x => x ^ (2 : ℝ)) hx
+  dsimp at this
+  rw [←Real.rpow_mul] at this
+  simp [Finset.sum] at this
+  linarith
+  apply Finset.sum_nonneg
+  intro i
+  simp [sq_nonneg]
 
--- -- Tangent space
--- axiom T : Type
--- -- We can define `T` as the dual `Λ0`-module of `Λ 1`
--- -- @[instance] axiom T.AddGroup : AddCommGroup T
--- @[instance] axiom T.LieRing : LieRing T
--- @[instance] axiom T.Module : Module (Λ0) T
--- instance : Module ℂ T := Module.compHom T (algebraMap ℂ (Λ0))
--- axiom T.lie_smul (t : ℂ) (x y : T) : ⁅x, t • y⁆ = t • ⁅x, y⁆
--- instance T.LieAlgebra : LieAlgebra ℂ T where
---     lie_smul := T.lie_smul
--- @[instance] axiom T.LieModule : LieModule ℂ T T
+@[simp] theorem defining_eq : fx 0 * fx 0 + fx 1 * fx 1 + fx 2 * fx 2 + fx 3 * fx 3 = 1 := by
+  rw [←sum_eq_one]
+  simp [Finset.sum]
+  ring
 
--- instance : SMulCommClass ℂ (Λ0) T where
---     smul_comm c x y := by
---         show (algebraMap ℂ Λ0 c) • (x • y) = x • ((algebraMap ℂ Λ0 c) • y)
---         rw [smul_smul, mul_comm, ←smul_smul]
+axiom px (i : Fin 4) : 𝒳
+@[simp] axiom px_def (i j : Fin 4) : px i (fx j) = (ite (i = j) 1 0) - fx i * fx j
 
--- instance : IsScalarTower ℂ (Λ0) T where
---     smul_assoc := by
---         intros c x y
---         show (c • x) • y = (algebraMap ℂ (Λ0) c) • (x • y)
---         simp [smul_smul, Algebra.smul_def]
+axiom eq_of_apply_fx {x y : 𝒳} (h : ∀ i, x (fx i) = y (fx i)) : x = y
 
--- -- Interior product
--- axiom ι : T →ₗ[Λ0] (E →ₗ[Λ0] E)
--- @[simp] axiom ι_deg_zero (p : T) (x : Λ0) : ι p x = 0
--- axiom ι_mem {n : ℤ} (p : T) (x : Λ n) : ι p x ∈ Λ (n - 1)
+@[simp] theorem N_eq_zero : ∑ i : Fin 4, fx i • px i = 0 := by
+  apply eq_of_apply_fx
+  intro j
+  simp [Finset.sum]
+  fin_cases j <;> simp
+  · calc _ = fx 0 - fx 0 * ∑ i, fx i ^ 2 := by simp [Finset.sum]; ring
+    _ = _ := by simp
+  · calc _ = fx 1 - fx 1 * ∑ i, fx i ^ 2 := by simp [Finset.sum]; ring
+    _ = _ := by simp
+  · calc _ = fx 2 - fx 2 * ∑ i, fx i ^ 2 := by simp [Finset.sum]; ring
+    _ = _ := by simp
+  · calc _ = fx 3 - fx 3 * ∑ i, fx i ^ 2 := by simp [Finset.sum]; ring
+    _ = _ := by simp
 
--- @[simp] instance (p : T) (x : E) [Homogeneous Λ x] : Homogeneous Λ (ι p x) where
---     deg := Homogeneous.deg Λ x - 1
---     mem := ι_mem p { val := x, property := Homogeneous.mem }
+@[simp] theorem lie_px (i j : Fin 4) : ⁅px i, px j⁆ = fx i • px j - fx j • px i := by
+  apply eq_of_apply_fx
+  intro k
+  conv_lhs =>
+    equals px i (px j (fx k)) - px j (px i (fx k)) => rfl
+  simp
+  split <;> simp <;> rename_i h1
+  rw [h1]
+  all_goals split <;> rename_i h2 <;> try rw [h2]
+  all_goals simp [h1]
+  all_goals simp [Ne.symm h2]
+  . ring
+  . split_ifs with h3
+    . simp; ring
+    . simp; ring
 
--- axiom ι_mul (p : T) (x y : E) [hx : Homogeneous Λ x] [hy : Homogeneous Λ y] : ι p (x * y) = (ι p x) * y + (if Even (hx.deg * hy.deg) then 1 else -1 : ℂ) • ((ι p y) * x)
+def dx (i : Fin 4) : Ω := d (algebraMap 𝒜 Ω (fx i))
+axiom d_eq_in_dx (f : 𝒜) : d (algebraMap 𝒜 Ω f) = ∑ i : Fin 4, px i f • (dx i)
 
--- -- Lie derivative
--- def L : T →ₗ[ℂ] (E →ₗ[ℂ] E) := {
---     toFun := fun x => {
---         toFun := fun y => ι x (d y) + d (ι x y)
---         map_add' := by intros; simp; abel
---         map_smul' := by simp
---     }
---     map_add' := by intros; ext; simp; abel
---     map_smul' := by intros; ext; simp
--- }
+@[simp] theorem ι_px_dx (i j : Fin 4) : ι (px i) (dx j) = (ite (i = j) 1 0) - algebraMap 𝒜 Ω (fx i * fx j) := by simp [dx, ι_d]
 
--- @[simp] instance (p : T) (x : E) [Homogeneous Λ x] : Homogeneous Λ (L p x) where
---     deg := Homogeneous.deg Λ x
---     mem := by apply Submodule.add_mem; all_goals apply Homogeneous.mem_if; simp
-
--- def der : T →ₗ[Λ0] (Λ0 →ₗ[ℂ] Λ0) := {
---     toFun := fun x => {
---         toFun := fun y => {
---             val := ι x (d y),
---             property := by apply Homogeneous.mem_if; simp
---         }
---         map_add' := by intros; simp
---         map_smul' := by intros; simp
---     }
---     map_add' := by intros; ext; simp
---     map_smul' := by
---         intros c x
---         ext z
---         show (ι (c • x) (d z)) = c • (ι x (d z))
---         simp
--- }
--- lemma ι_d (x : T) (y : Λ0) : ι x (d y) = der x y := rfl
--- lemma der_mul (x : T) (y z : Λ0) : der x (y * z) = (der x y) * z + (der x z) * y := by
---     simp [der, d_mul, ι_mul]
---     simp [ι_d]
---     rfl
-
--- axiom lie_Λ0smul (x : T) (y : Λ0) (z : T) : ⁅x, y • z⁆ = (der x y) • z + y • ⁅x, z⁆
--- lemma Λ0smul_lie (x : Λ0) (y : T) (z : T) : ⁅x • y, z⁆ = (-(der z x)) • y + x • ⁅y, z⁆ := by
---     rw [←lie_skew, lie_Λ0smul]
---     simp only [neg_add_rev, neg_smul, ←smul_neg, lie_skew]
---     abel
-
--- -- custom_rewrite
-
--- private lemma Int_smul_Complex_module {M : Type*} [AddCommGroup M] [Module ℂ M] (x : ℤ) (y : M) : (x • y) = (x : ℂ) • y := by norm_cast
-
--- -- Rewrite each term involving mul and smul of terms of ℕ, ℤ, ℂ, Λ0, E in the preferred way:
--- -- ((_ : ℂ) • (_ : Λ0)) • (_ : E)
--- -- where the term of E has no ℕ, ℤ, ℂ, Λ0 factors
--- --       the term of Λ0 has no ℕ, ℤ, ℂ factors
--- -- The point is that we want to use the `ring` and `simp` tactic on `Λ0` which is a commutative ring.
--- -- It also sets up for the use of the `collect` tactic.
--- syntax "custom_rewrite" : tactic
--- macro_rules
--- | `(tactic| custom_rewrite) => `(tactic| simp only [smul_mul_assoc, mul_smul_comm, smul_smul, ←smul_assoc, Int_smul_Complex_module] <;> ring_nf <;> try simp [-neg_smul, -smul_assoc] <;> abel_nf <;> try simp only [smul_mul_assoc, mul_smul_comm, smul_smul, ←smul_assoc, Int_smul_Complex_module])
+@[simp] theorem ν_eq_zero : ∑ i : Fin 4, fx i • (dx i) = 0 := by
+  suffices (2 : ℂ) • ∑ i : Fin 4, fx i • (dx i) = 0 by
+    have := congr_arg (fun x => (2⁻¹ : ℂ) • x) this
+    dsimp at this
+    rw [smul_smul] at this
+    ring_nf at this
+    simp at this
+    exact this
+  calc _ = d (∑ i, algebraMap 𝒜 Ω (fx i ^ 2)) := by {
+    ext1 n
+    by_cases h : n = 1
+    case pos =>
+      cases h
+      ext v
+      simp [DirectSum.smul_apply, -map_pow, AlternatingMap.sum_apply, dx, Finset.smul_sum]
+      simp [ofNat_smul_eq_nsmul]
+    case neg =>
+      simp [DirectSum.smul_apply, -map_pow, dx]
+      conv_lhs =>
+        enter [2, 2, i, 2]
+        simp [h, -map_pow]
+      conv_rhs =>
+        enter [2, i]
+        simp [h, -map_pow]
+      simp
+  }
+  _ = d 1 := by simp [←map_sum, -map_pow]
+  _ = 0 := by simp

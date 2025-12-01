@@ -1,79 +1,201 @@
--- import Sphere.Basic
+import Sphere.Basic
+import Cochain.Algebra
+import Sphere.Util.Collect
 
--- noncomputable section
+noncomputable section
 
--- axiom x0 : Λ0
--- axiom x1 : Λ0
--- axiom x2 : Λ0
--- axiom x3 : Λ0
+def 𝒳.ρ : 𝒳 := fx 2 • px 1 - fx 1 • px 2 + fx 0 • px 3 - fx 3 • px 0
+def 𝒳.φ1 : 𝒳 := fx 0 • px 1 - fx 1 • px 0 + fx 3 • px 2 - fx 2 • px 3
+def 𝒳.φ2 : 𝒳 := fx 0 • px 2 - fx 2 • px 0 + fx 1 • px 3 - fx 3 • px 1
 
--- axiom con : x0 * x0 + x1 * x1 + x2 * x2 + x3 * x3 = 1
+def Ω.α : Ω := fx 0 • dx 3 - fx 3 • dx 0 + fx 2 • dx 1 - fx 1 • dx 2
+def Ω.l1 : Ω := fx 0 • dx 1 - fx 1 • dx 0 + fx 3 • dx 2 - fx 2 • dx 3
+def Ω.l2 : Ω := fx 0 • dx 2 - fx 2 • dx 0 + fx 1 • dx 3 - fx 3 • dx 1
 
--- @[simp] lemma I_pow_two : Complex.I ^ 2 = -1 := by simp
--- @[simp] lemma I_I : Complex.I * Complex.I = -1 := by simp
+def 𝒳.H : 𝒳 := (-Complex.I) • ρ
+def 𝒳.X : 𝒳 := (2⁻¹ : ℂ) • (φ1 - Complex.I • φ2)
+def 𝒳.Y : 𝒳 := (2⁻¹ : ℂ) • (-φ1 - Complex.I • φ2)
 
--- def l1 : Λ 1 := ⟨x0 • d x1 - x1 • d x0 + x3 • d x2 - x2 • d x3, by linear_homogeneous⟩
--- def l2 : Λ 1 := ⟨x0 • d x2 - x2 • d x0 + x1 • d x3 - x3 • d x1, by linear_homogeneous⟩
--- def α : Λ 1 := ⟨x0 • d x3 - x3 • d x0 + x2 • d x1 - x1 • d x2, by linear_homogeneous⟩
--- def l : Λ 1 := ⟨l1 + Complex.I • l2, by linear_homogeneous⟩
--- def l_bar : Λ 1 := ⟨l1 - Complex.I • l2, by linear_homogeneous⟩
+def Ω.H' : Ω := Complex.I • α
+def Ω.X' : Ω := Ω.l1 + Complex.I • Ω.l2
+def Ω.Y' : Ω := -Ω.l1 + Complex.I • Ω.l2
 
--- axiom px0 : T
--- axiom px1 : T
--- axiom px2 : T
--- axiom px3 : T
+open Cochain
 
--- @[simp] axiom px00: der px0 x0 = 1
--- @[simp] axiom px01: der px0 x1 = 0
--- @[simp] axiom px02: der px0 x2 = 0
--- @[simp] axiom px03: der px0 x3 = 0
+syntax "ι_basis_eq_one_or_zero" : tactic
+macro_rules
+| `(tactic| ι_basis_eq_one_or_zero) => `(tactic|
+    simp [-map_mul];
+    simp only [Algebra.smul_def (A:=Ω), ←map_mul, ←map_one (algebraMap 𝒜 Ω), ←map_zero (algebraMap 𝒜 Ω), ←map_sub, ←map_add, ←map_neg];
+    congr;
+    ring_nf;
+    try rw [←sum_eq_one]; simp [Finset.sum]; ring
+  )
 
--- @[simp] axiom px10: der px1 x0 = 0
--- @[simp] axiom px11: der px1 x1 = 1
--- @[simp] axiom px12: der px1 x2 = 0
--- @[simp] axiom px13: der px1 x3 = 0
+@[simp] lemma ι_ρ_α : ι (𝒳.ρ) Ω.α = 1 := by
+  unfold 𝒳.ρ Ω.α
+  ι_basis_eq_one_or_zero
 
--- @[simp] axiom px20: der px2 x0 = 0
--- @[simp] axiom px21: der px2 x1 = 0
--- @[simp] axiom px22: der px2 x2 = 1
--- @[simp] axiom px23: der px2 x3 = 0
+@[simp] lemma ι_ρ_l1 : ι (𝒳.ρ) Ω.l1 = 0 := by
+  unfold 𝒳.ρ Ω.l1
+  ι_basis_eq_one_or_zero
 
--- @[simp] axiom px30: der px3 x0 = 0
--- @[simp] axiom px31: der px3 x1 = 0
--- @[simp] axiom px32: der px3 x2 = 0
--- @[simp] axiom px33: der px3 x3 = 1
+@[simp] lemma ι_ρ_l2 : ι (𝒳.ρ) Ω.l2 = 0 := by
+  unfold 𝒳.ρ Ω.l2
+  ι_basis_eq_one_or_zero
 
--- def ρ := x2 • px1 - x1 • px2 + x0 • px3 - x3 • px0
--- def φ1 := x0 • px1 - x1 • px0 + x3 • px2 - x2 • px3
--- def φ2 := x0 • px2 - x2 • px0 + x1 • px3 - x3 • px1
--- def φ := (2⁻¹ : ℂ) • (φ1 - Complex.I • φ2)
--- def φ_bar := (2⁻¹ : ℂ) • (φ1 + Complex.I • φ2)
+@[simp] lemma ι_φ1_α : ι (𝒳.φ1) Ω.α = 0 := by
+  unfold 𝒳.φ1 Ω.α
+  ι_basis_eq_one_or_zero
 
--- axiom d_eq_in_basis (f : Λ0) : d f = (der ρ f) • α + (der φ f) • l + (der φ_bar f) • l_bar
+@[simp] lemma ι_φ1_l1 : ι (𝒳.φ1) Ω.l1 = 1 := by
+  unfold 𝒳.φ1 Ω.l1
+  ι_basis_eq_one_or_zero
 
--- @[simp] lemma Lie00 : ⁅px0, px0⁆ = 0 := lie_self px0
--- @[simp] axiom Lie01 : ⁅px0, px1⁆ = 0
--- @[simp] axiom Lie02 : ⁅px0, px2⁆ = 0
--- @[simp] axiom Lie03 : ⁅px0, px3⁆ = 0
+@[simp] lemma ι_φ1_l2 : ι (𝒳.φ1) Ω.l2 = 0 := by
+  unfold 𝒳.φ1 Ω.l2
+  ι_basis_eq_one_or_zero
 
--- @[simp] axiom Lie10 : ⁅px1, px0⁆ = 0
--- @[simp] lemma Lie11 : ⁅px1, px1⁆ = 0 := lie_self px1
--- @[simp] axiom Lie12 : ⁅px1, px2⁆ = 0
--- @[simp] axiom Lie13 : ⁅px1, px3⁆ = 0
+@[simp] lemma ι_φ2_α : ι (𝒳.φ2) Ω.α = 0 := by
+  unfold 𝒳.φ2 Ω.α
+  ι_basis_eq_one_or_zero
 
--- @[simp] axiom Lie20 : ⁅px2, px0⁆ = 0
--- @[simp] axiom Lie21 : ⁅px2, px1⁆ = 0
--- @[simp] lemma Lie22 : ⁅px2, px2⁆ = 0 := lie_self px2
--- @[simp] axiom Lie23 : ⁅px2, px3⁆ = 0
+@[simp] lemma ι_φ2_l1 : ι (𝒳.φ2) Ω.l1 = 0 := by
+  unfold 𝒳.φ2 Ω.l1
+  ι_basis_eq_one_or_zero
 
--- @[simp] axiom Lie30 : ⁅px3, px0⁆ = 0
--- @[simp] axiom Lie31 : ⁅px3, px1⁆ = 0
--- @[simp] axiom Lie32 : ⁅px3, px2⁆ = 0
--- @[simp] lemma Lie33 : ⁅px3, px3⁆ = 0 := lie_self px3
+@[simp] lemma ι_φ2_l2 : ι (𝒳.φ2) Ω.l2 = 1 := by
+  unfold 𝒳.φ2 Ω.l2
+  ι_basis_eq_one_or_zero
 
--- @[simp] lemma dx1_mul_dx0 : d x1 * d x0 = -(d x0 * d x1) := by rw [graded_comm Λ]; simp
--- @[simp] lemma dx2_mul_dx0 : d x2 * d x0 = -(d x0 * d x2) := by rw [graded_comm Λ]; simp
--- @[simp] lemma dx2_mul_dx1 : d x2 * d x1 = -(d x1 * d x2) := by rw [graded_comm Λ]; simp
--- @[simp] lemma dx3_mul_dx0 : d x3 * d x0 = -(d x0 * d x3) := by rw [graded_comm Λ]; simp
--- @[simp] lemma dx3_mul_dx1 : d x3 * d x1 = -(d x1 * d x3) := by rw [graded_comm Λ]; simp
--- @[simp] lemma dx3_mul_dx2 : d x3 * d x2 = -(d x2 * d x3) := by rw [graded_comm Λ]; simp
+@[simp] theorem ι_H_H' : ι (𝒳.H) Ω.H' = 1 := by
+  unfold 𝒳.H Ω.H'
+  simp [smul_smul]
+
+@[simp] theorem ι_H_X' : ι (𝒳.H) Ω.X' = 0 := by
+  unfold 𝒳.H Ω.X'
+  simp
+
+@[simp] theorem ι_H_Y' : ι (𝒳.H) Ω.Y' = 0 := by
+  unfold 𝒳.H Ω.Y'
+  simp
+
+@[simp] theorem ι_X_H' : ι (𝒳.X) Ω.H' = 0 := by
+  unfold 𝒳.X Ω.H'
+  simp
+
+@[simp] theorem ι_X_X' : ι (𝒳.X) Ω.X' = 1 := by
+  unfold 𝒳.X Ω.X'
+  simp [smul_smul, ←add_smul]
+  ring_nf
+  simp
+
+@[simp] theorem ι_X_Y' : ι (𝒳.X) Ω.Y' = 0 := by
+  unfold 𝒳.X Ω.Y'
+  simp [smul_smul]
+
+@[simp] theorem ι_Y_H' : ι (𝒳.Y) Ω.H' = 0 := by
+  unfold 𝒳.Y Ω.H'
+  simp
+
+@[simp] theorem ι_Y_X' : ι (𝒳.Y) Ω.X' = 0 := by
+  unfold 𝒳.Y Ω.X'
+  simp [smul_smul]
+
+@[simp] theorem ι_Y_Y' : ι (𝒳.Y) Ω.Y' = 1 := by
+  unfold 𝒳.Y Ω.Y'
+  simp [smul_smul, ←add_smul]
+  ring_nf
+  simp
+
+theorem d_eq_in_αl (f : 𝒜) : d (algebraMap 𝒜 Ω f) = (𝒳.ρ f) • Ω.α + (𝒳.φ1 f) • Ω.l1 + (𝒳.φ2 f) • Ω.l2 := by
+  rw [d_eq_in_dx]
+  unfold 𝒳.ρ 𝒳.φ1 𝒳.φ2 Ω.α Ω.l1 Ω.l2
+  simp [Finset.sum, smul_add, smul_sub, smul_smul]
+  ring_nf
+  simp only [sub_eq_add_neg, ←neg_smul]
+  abel_nf
+  collect dx 0
+  conv_rhs =>
+    enter [1, 1]
+    ring_nf
+    equals px 0 f =>
+      calc _ = (∑ (i ≠ 0), fx i ^ 2) * px 0 f - fx 0 * (∑ (i ≠ 0), fx i • px i) f := by {
+        simp [Finset.sum_erase_eq_sub, -sum_eq_one, -N_eq_zero]
+        simp [Finset.sum]
+        ring_nf
+      }
+      _ = (∑ i, fx i ^ 2) * px 0 f := by {
+        simp [Finset.sum_erase_eq_sub]
+        ring_nf
+      }
+      _ = _ := by simp
+  congr 1
+  collect dx 1
+  conv_rhs =>
+    enter [1, 1]
+    ring_nf
+    equals px 1 f =>
+      calc _ = (∑ (i ≠ 1), fx i ^ 2) * px 1 f - fx 1 * (∑ (i ≠ 1), fx i • px i) f := by {
+        simp [Finset.sum_erase_eq_sub, -sum_eq_one, -N_eq_zero]
+        simp [Finset.sum]
+        ring_nf
+      }
+      _ = (∑ i, fx i ^ 2) * px 1 f := by {
+        simp [Finset.sum_erase_eq_sub]
+        ring_nf
+      }
+      _ = _ := by simp
+  congr 1
+  collect dx 2
+  conv_rhs =>
+    enter [1, 1]
+    ring_nf
+    equals px 2 f =>
+      calc _ = (∑ (i ≠ 2), fx i ^ 2) * px 2 f - fx 2 * (∑ (i ≠ 2), fx i • px i) f := by {
+        simp [Finset.sum_erase_eq_sub, -sum_eq_one, -N_eq_zero]
+        simp [Finset.sum]
+        ring_nf
+      }
+      _ = (∑ i, fx i ^ 2) * px 2 f := by {
+        simp [Finset.sum_erase_eq_sub]
+        ring_nf
+      }
+      _ = _ := by simp
+  congr 1
+  collect dx 3
+  conv_rhs =>
+    enter [1]
+    ring_nf
+    equals px 3 f =>
+      calc _ = (∑ (i ≠ 3), fx i ^ 2) * px 3 f - fx 3 * (∑ (i ≠ 3), fx i • px i) f := by {
+        simp [Finset.sum_erase_eq_sub, -sum_eq_one, -N_eq_zero]
+        simp [Finset.sum]
+        ring_nf
+      }
+      _ = (∑ i, fx i ^ 2) * px 3 f := by {
+        simp [Finset.sum_erase_eq_sub]
+        ring_nf
+      }
+      _ = _ := by simp
+
+theorem d_eq_in_HXY (f : 𝒜) : d (algebraMap 𝒜 Ω f) = (𝒳.H f) • Ω.H' + (𝒳.X f) • Ω.X' + (𝒳.Y f) • Ω.Y' := by
+  rw [d_eq_in_αl]
+  unfold 𝒳.H 𝒳.X 𝒳.Y Ω.H' Ω.X' Ω.Y'
+  simp [smul_add, smul_sub, smul_smul, smul_comm (M:=𝒜) (N:=ℂ)]
+  abel_nf
+  congr 1
+  simp [←neg_smul]
+  collect Ω.l1
+  congr
+  . abel_nf
+    simp
+    rw [←smul_assoc]
+    simp
+  . rw [←smul_assoc, ←smul_assoc, ←add_smul]
+    congr
+    simp [←smul_assoc]
+    abel_nf
+    simp [←smul_assoc]
+    ring_nf
+    simp
