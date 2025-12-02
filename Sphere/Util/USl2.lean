@@ -97,11 +97,12 @@ theorem h_half_weight_disjoint {m n : ℤ} (hmn : m ≠ n) {x : USl2 K}
 /-- The decomposition of USl2 K into h-weight spaces over a field K.
 
 The construction uses the Vandermonde argument: given any finite sum of weight vectors
-∑ᵢ vᵢ where vᵢ ∈ h_half_weight K kᵢ with distinct kᵢ, repeatedly applying ad(h) gives
-equations ∑ᵢ (2kᵢ)ʲ vᵢ = 0 for j = 0, 1, 2, ... The Vandermonde matrix with entries
-(2kᵢ)ʲ is invertible when the kᵢ are distinct (cf. `Matrix.det_vandermonde_ne_zero_iff`),
-so all vᵢ = 0. This proves independence, and spanning follows from the generators
-e, f, h having definite weights 1, -1, 0 respectively. -/
+`v₀ + v₁ + ... + vₙ` where `vᵢ ∈ h_half_weight K kᵢ` with distinct weights `kᵢ`,
+repeatedly applying `ad(h)` gives equations `(2k₀)ʲ v₀ + (2k₁)ʲ v₁ + ... = 0` for
+`j = 0, 1, 2, ...`. The Vandermonde matrix with entries `(2kᵢ)ʲ` is invertible when
+the `kᵢ` are distinct (cf. `Matrix.det_vandermonde_ne_zero_iff`), so all `vᵢ = 0`.
+This proves independence, and spanning follows from the generators `e`, `f`, `h`
+having definite weights 1, -1, 0 respectively. -/
 def h_half_weight_decompose : USl2 K →ₐ[K] ⨁ i, h_half_weight K i := sorry
 
 /-- The decomposition is a left inverse of the canonical embedding.
