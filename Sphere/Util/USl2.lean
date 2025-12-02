@@ -1,6 +1,7 @@
 import Sphere.Util.Sl2
 import Sphere.Util.Ring
 import Mathlib.Algebra.Lie.UniversalEnveloping
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 open Sl2
 open UniversalEnvelopingAlgebra
@@ -41,3 +42,5 @@ theorem h_mem_f : ι R (f R) ∈ h_half_weight R (-1) := by
   simp [-zsmul_eq_mul, -ι_apply, ←LieHom.map_lie]
   simp [-zsmul_eq_mul, -nsmul_eq_mul]
   norm_cast
+
+-- TODO Implement instance : GradedAlgebra (h_half_weight R) where
