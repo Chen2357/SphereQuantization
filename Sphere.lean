@@ -7,6 +7,8 @@ import Sphere.Differential
 import Sphere.Operator
 import Sphere.Connection
 
+import Sphere.Sl2
+
 -- import Sphere.Seven.Basis
 
 -- import Sphere.Seven.Fundamental
