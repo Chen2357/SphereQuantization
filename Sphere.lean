@@ -9,6 +9,8 @@ import Sphere.Connection
 
 import Sphere.Sl2
 
+import Sphere.Util.USl2
+
 -- import Sphere.Seven.Basis
 
 -- import Sphere.Seven.Fundamental
