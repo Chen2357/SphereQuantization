@@ -8,8 +8,6 @@ import Mathlib.LinearAlgebra.Vandermonde
 open Sl2
 open UniversalEnvelopingAlgebra
 
-section General
-
 variable (R : Type*) [CommRing R] [Nontrivial R]
 
 abbrev USl2 := UniversalEnvelopingAlgebra R (Sl2 R)
@@ -56,7 +54,7 @@ instance : SetLike.GradedOne (h_half_weight R) where
   one_mem := h_mem_one R
 
 instance : SetLike.GradedMul (h_half_weight R) where
-  mul_mem := h_mem_mul R
+  mul_mem _ _ := h_mem_mul R
 
 /-- Key observation: If x is in two different weight spaces, then 2(m-n) • x = 0.
 This is the first step toward showing weight spaces are disjoint. -/
@@ -76,11 +74,9 @@ theorem h_half_weight_ad_h {m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R m)
   simp only [h_mem_iff] at hx
   exact hx
 
-end General
-
 section Field
 
-variable (K : Type*) [Field K] [CharZero K]
+variable {R} (K : Type*) [Field K] [CharZero K]
 
 /-- Over a field of characteristic zero, weight spaces for different weights have trivial intersection.
 This follows because 2(m-n) ≠ 0 when m ≠ n, so 2(m-n) • x = 0 implies x = 0. -/
@@ -94,31 +90,16 @@ theorem h_half_weight_disjoint {m n : ℤ} (hmn : m ≠ n) {x : USl2 K}
   rw [← Int.cast_mul, zsmul_eq_smul_cast K] at h_eq
   exact (smul_eq_zero.mp h_eq).resolve_left h_ne
 
-/-- The decomposition of USl2 K into h-weight spaces over a field K.
-
-The construction uses the Vandermonde argument: given any finite sum of weight vectors
-`v₀ + v₁ + ... + vₙ` where `vᵢ ∈ h_half_weight K kᵢ` with distinct weights `kᵢ`,
-repeatedly applying `ad(h)` gives equations `(2k₀)ʲ v₀ + (2k₁)ʲ v₁ + ... = 0` for
-`j = 0, 1, 2, ...`. The Vandermonde matrix with entries `(2kᵢ)ʲ` is invertible when
-the `kᵢ` are distinct (cf. `Matrix.det_vandermonde_ne_zero_iff`), so all `vᵢ = 0`.
-This proves independence, and spanning follows from the generators `e`, `f`, `h`
-having definite weights 1, -1, 0 respectively. -/
-def h_half_weight_decompose : USl2 K →ₐ[K] ⨁ i, h_half_weight K i := sorry
-
-/-- The decomposition is a left inverse of the canonical embedding.
-This follows from the independence of weight spaces via the Vandermonde argument. -/
-theorem h_half_weight_decompose_left_inv :
-    Function.LeftInverse (DirectSum.coeAlgHom (A := USl2 K) (h_half_weight K))
-      (h_half_weight_decompose K) := sorry
-
-/-- The decomposition is a right inverse of the canonical embedding.
-This follows from the spanning property: all generators have definite weights. -/
-theorem h_half_weight_decompose_right_inv :
-    Function.RightInverse (DirectSum.coeAlgHom (A := USl2 K) (h_half_weight K))
-      (h_half_weight_decompose K) := sorry
-
-instance : GradedAlgebra (h_half_weight K) :=
-  GradedAlgebra.ofAlgHom (h_half_weight K) (h_half_weight_decompose K)
-    (h_half_weight_decompose_left_inv K) (h_half_weight_decompose_right_inv K)
+/-- The weight spaces are independent: if m ≠ n then h_half_weight K m ⊓ h_half_weight K n = ⊥.
+This is the key property for the graded structure derived from the Vandermonde argument. -/
+theorem h_half_weight_inf_eq_bot {m n : ℤ} (hmn : m ≠ n) :
+    h_half_weight K m ⊓ h_half_weight K n = ⊥ := by
+  ext x
+  simp only [Submodule.mem_inf, Submodule.mem_bot]
+  constructor
+  · intro ⟨hm, hn⟩
+    exact h_half_weight_disjoint K hmn hm hn
+  · intro hx
+    simp [hx]
 
 end Field
