@@ -1,13 +1,11 @@
-import Sphere.Utilities
 import Sphere.Basic
-
 import Sphere.Basis
-import Sphere.Differential
+
 import Sphere.Lie
+import Sphere.Differential
 
 import Sphere.Operator
-import Sphere.Flatness
-import Sphere.Quantization
+import Sphere.Connection
 
 -- import Sphere.Seven.Basis
 
