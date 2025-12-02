@@ -108,7 +108,7 @@ macro_rules
   ring_nf
   simp
 
-theorem d_eq_in_αl (f : 𝒜) : d (algebraMap 𝒜 Ω f) = (𝒳.ρ f) • Ω.α + (𝒳.φ1 f) • Ω.l1 + (𝒳.φ2 f) • Ω.l2 := by
+theorem d_eq_in_αl (f : 𝒜) : d (f • 1) = (𝒳.ρ f) • Ω.α + (𝒳.φ1 f) • Ω.l1 + (𝒳.φ2 f) • Ω.l2 := by
   rw [d_eq_in_dx]
   unfold 𝒳.ρ 𝒳.φ1 𝒳.φ2 Ω.α Ω.l1 Ω.l2
   simp [Finset.sum, smul_add, smul_sub, smul_smul]
@@ -179,7 +179,7 @@ theorem d_eq_in_αl (f : 𝒜) : d (algebraMap 𝒜 Ω f) = (𝒳.ρ f) • Ω.�
       }
       _ = _ := by simp
 
-theorem d_eq_in_HXY (f : 𝒜) : d (algebraMap 𝒜 Ω f) = (𝒳.H f) • Ω.H' + (𝒳.X f) • Ω.X' + (𝒳.Y f) • Ω.Y' := by
+theorem d_eq_in_HXY (f : 𝒜) : d (f • 1) = (𝒳.H f) • Ω.H' + (𝒳.X f) • Ω.X' + (𝒳.Y f) • Ω.Y' := by
   rw [d_eq_in_αl]
   unfold 𝒳.H 𝒳.X 𝒳.Y Ω.H' Ω.X' Ω.Y'
   simp [smul_add, smul_sub, smul_smul, smul_comm (M:=𝒜) (N:=ℂ)]
