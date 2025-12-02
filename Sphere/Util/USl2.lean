@@ -2,6 +2,7 @@ import Sphere.Util.Sl2
 import Sphere.Util.Ring
 import Mathlib.Algebra.Lie.UniversalEnveloping
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Algebra.DirectSum.Algebra
 
 open Sl2
 open UniversalEnvelopingAlgebra
@@ -43,4 +44,27 @@ theorem h_mem_f : ι R (f R) ∈ h_half_weight R (-1) := by
   simp [-zsmul_eq_mul, -nsmul_eq_mul]
   norm_cast
 
--- TODO Implement instance : GradedAlgebra (h_half_weight R) where
+theorem h_mem_one : (1 : USl2 R) ∈ h_half_weight R 0 := by
+  simp
+
+instance : SetLike.GradedOne (h_half_weight R) where
+  one_mem := h_mem_one R
+
+instance : SetLike.GradedMul (h_half_weight R) where
+  mul_mem := h_mem_mul R
+
+/-- The decomposition of USl2 into h-weight spaces.
+This requires the PBW theorem and weight space decomposition for sl₂ representations. -/
+def h_half_weight_decompose : USl2 R →ₐ[R] ⨁ i, h_half_weight R i := sorry
+
+theorem h_half_weight_decompose_left_inv :
+    Function.LeftInverse (DirectSum.coeAlgHom (A := USl2 R) (h_half_weight R))
+      (h_half_weight_decompose R) := sorry
+
+theorem h_half_weight_decompose_right_inv :
+    Function.RightInverse (DirectSum.coeAlgHom (A := USl2 R) (h_half_weight R))
+      (h_half_weight_decompose R) := sorry
+
+instance : GradedAlgebra (h_half_weight R) :=
+  GradedAlgebra.ofAlgHom (h_half_weight R) (h_half_weight_decompose R)
+    (h_half_weight_decompose_left_inv R) (h_half_weight_decompose_right_inv R)
