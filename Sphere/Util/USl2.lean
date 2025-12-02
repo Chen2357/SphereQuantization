@@ -50,11 +50,9 @@ This is a fundamental property for graded algebras. -/
 theorem h_mem_one : (1 : USl2 R) ∈ h_half_weight R 0 := by
   simp
 
-instance : SetLike.GradedOne (h_half_weight R) where
+instance : SetLike.GradedMonoid (h_half_weight R) where
   one_mem := h_mem_one R
-
-instance : SetLike.GradedMul (h_half_weight R) where
-  mul_mem hx hy := h_mem_mul R hx hy
+  mul_mem _ _ _ _ hx hy := h_mem_mul R hx hy
 
 /-- Key observation: If x is in two different weight spaces, then 2(m-n) • x = 0.
 This is the first step toward showing weight spaces are disjoint. -/
@@ -78,6 +76,9 @@ section Field
 
 variable (K : Type*) [Field K] [CharZero K]
 
+instance : IsAddTorsionFree (USl2 K) where
+  nsmul_right_injective := sorry
+
 /-- Over a field of characteristic zero, weight spaces for different weights have trivial intersection.
 This follows because 2(m-n) ≠ 0 when m ≠ n, so 2(m-n) • x = 0 implies x = 0. -/
 theorem h_half_weight_disjoint {m n : ℤ} (hmn : m ≠ n) {x : USl2 K}
@@ -86,9 +87,12 @@ theorem h_half_weight_disjoint {m n : ℤ} (hmn : m ≠ n) {x : USl2 K}
   have h_ne : (2 : K) * (m - n) ≠ 0 := by
     simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, not_false_eq_true,
                Int.cast_eq_zero, sub_eq_zero, true_and]
-    exact fun h => hmn (Int.cast_injective h)
-  rw [← Int.cast_mul, zsmul_eq_smul_cast K] at h_eq
-  exact (smul_eq_zero.mp h_eq).resolve_left h_ne
+    intro h
+    simp at h
+    cases h
+    trivial
+  norm_cast at h_ne
+  apply (smul_eq_zero.mp h_eq).resolve_left h_ne
 
 /-- The weight spaces are independent: if m ≠ n then h_half_weight K m ⊓ h_half_weight K n = ⊥.
 This is the key property for the graded structure derived from the Vandermonde argument. -/
@@ -101,5 +105,18 @@ theorem h_half_weight_inf_eq_bot {m n : ℤ} (hmn : m ≠ n) :
     exact h_half_weight_disjoint K hmn hm hn
   · intro hx
     simp [hx]
+
+theorem h_half_weight_iSupIndep : iSupIndep (h_half_weight K) := by
+  sorry
+
+theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
+  sorry
+
+theorem h_half_weight_directSum: DirectSum.IsInternal (h_half_weight K) := by
+  refine (DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top (h_half_weight K)).mpr ?_
+  constructor
+  exact h_half_weight_iSupIndep K
+  exact h_half_weight_iSup K
+
 
 end Field
