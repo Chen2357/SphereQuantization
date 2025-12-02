@@ -47,71 +47,110 @@ instance : SetLike.GradedMonoid (h_half_weight R) where
   one_mem := by simp
   mul_mem _ _ _ _ hx hy := h_mem_mul R hx hy
 
-/-- Key observation: If x is in two different weight spaces, then 2(m-n) • x = 0.
-This is the first step toward showing weight spaces are disjoint. -/
-theorem h_half_weight_eq_smul {m n : ℤ} {x : USl2 R}
-    (hm : x ∈ h_half_weight R m) (hn : x ∈ h_half_weight R n) :
-    (2 * (m - n)) • x = 0 := by
-  simp only [h_mem_iff] at hm hn
-  have : (2 * m) • x = (2 * n) • x := by rw [← hm, ← hn]
-  calc (2 * (m - n)) • x = (2 * m - 2 * n) • x := by ring_nf
-    _ = (2 * m) • x - (2 * n) • x := by rw [sub_smul]
-    _ = 0 := by rw [this, sub_self]
+-- Key observation: If x is in two different weight spaces, then 2(m-n) • x = 0.
+-- This is the first step toward showing weight spaces are disjoint.
+-- theorem h_half_weight_eq_smul {m n : ℤ} {x : USl2 R}
+--     (hm : x ∈ h_half_weight R m) (hn : x ∈ h_half_weight R n) :
+--     (2 * (m - n)) • x = 0 := by
+--   simp only [h_mem_iff] at hm hn
+--   have : (2 * m) • x = (2 * n) • x := by rw [← hm, ← hn]
+--   calc (2 * (m - n)) • x = (2 * m - 2 * n) • x := by ring_nf
+--     _ = (2 * m) • x - (2 * n) • x := by rw [sub_smul]
+--     _ = 0 := by rw [this, sub_self]
 
-/-- Applying `ad(h)` to an element of weight space m gives 2m times that element.
-This is the eigenvalue property that enables the Vandermonde argument for independence. -/
-theorem h_half_weight_ad_h {m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R m) :
-    ⁅ι R (h R), x⁆ = (2 * m) • x := by
-  simp only [h_mem_iff] at hx
-  exact hx
+-- Applying `ad(h)` to an element of weight space m gives 2m times that element.
+-- This is the eigenvalue property that enables the Vandermonde argument for independence.
+-- theorem h_half_weight_ad_h {m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R m) :
+--     ⁅ι R (h R), x⁆ = (2 * m) • x := by
+--   simp only [h_mem_iff] at hx
+--   exact hx
 
-section Field
+-- section Field
 
-variable (K : Type*) [Field K] [CharZero K]
+-- variable (K : Type*) [Field K] [CharZero K]
 
-instance : IsAddTorsionFree (USl2 K) where
-  nsmul_right_injective n hn x y hxy := by
-    have hne : (n : K) ≠ 0 := Nat.cast_ne_zero.mpr hn
-    exact smul_right_injective (USl2 K) hne hxy
+-- instance : IsAddTorsionFree (USl2 K) where
+--   nsmul_right_injective n hn x y hxy := by
+--     have hne : (n : K) ≠ 0 := Nat.cast_ne_zero.mpr hn
+--     exact smul_right_injective (USl2 K) hne hxy
 
-/-- Over a field of characteristic zero, weight spaces for different weights have trivial intersection.
-This follows because 2(m-n) ≠ 0 when m ≠ n, so 2(m-n) • x = 0 implies x = 0. -/
-theorem h_half_weight_disjoint {m n : ℤ} (hmn : m ≠ n) {x : USl2 K}
-    (hm : x ∈ h_half_weight K m) (hn : x ∈ h_half_weight K n) : x = 0 := by
-  have h_eq := h_half_weight_eq_smul K hm hn
-  have h_ne : (2 : K) * (m - n) ≠ 0 := by
-    simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, sub_eq_zero]
-    intro h
-    simp at h
-    cases h
-    trivial
-  norm_cast at h_ne
-  apply (smul_eq_zero.mp h_eq).resolve_left h_ne
+-- Over a field of characteristic zero, weight spaces for different weights have trivial intersection.
+-- This follows because 2(m-n) ≠ 0 when m ≠ n, so 2(m-n) • x = 0 implies x = 0.
+-- theorem h_half_weight_disjoint {m n : ℤ} (hmn : m ≠ n) {x : USl2 K}
+--     (hm : x ∈ h_half_weight K m) (hn : x ∈ h_half_weight K n) : x = 0 := by
+--   have h_eq := h_half_weight_eq_smul K hm hn
+--   have h_ne : (2 : K) * (m - n) ≠ 0 := by
+--     simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, sub_eq_zero]
+--     intro h
+--     simp at h
+--     cases h
+--     trivial
+--   norm_cast at h_ne
+--   apply (smul_eq_zero.mp h_eq).resolve_left h_ne
 
-/-- The weight spaces are independent: if m ≠ n then h_half_weight K m ⊓ h_half_weight K n = ⊥.
-This is the key property for the graded structure derived from the Vandermonde argument. -/
-theorem h_half_weight_inf_eq_bot {m n : ℤ} (hmn : m ≠ n) :
-    h_half_weight K m ⊓ h_half_weight K n = ⊥ := by
-  ext x
-  simp only [Submodule.mem_inf, Submodule.mem_bot]
-  constructor
-  · intro ⟨hm, hn⟩
-    exact h_half_weight_disjoint K hmn hm hn
-  · intro hx
-    simp [hx]
+-- The weight spaces are independent: if m ≠ n then h_half_weight K m ⊓ h_half_weight K n = ⊥.
+-- This is the key property for the graded structure derived from the Vandermonde argument.
+-- theorem h_half_weight_inf_eq_bot {m n : ℤ} (hmn : m ≠ n) :
+--     h_half_weight K m ⊓ h_half_weight K n = ⊥ := by
+--   ext x
+--   simp only [Submodule.mem_inf, Submodule.mem_bot]
+--   constructor
+--   · intro ⟨hm, hn⟩
+--     exact h_half_weight_disjoint K hmn hm hn
+--   · intro hx
+--     simp [hx]
 
-theorem h_half_weight_iSupIndep : iSupIndep (h_half_weight K) := by
-  apply (iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero _).mpr
-  sorry
+-- theorem Finset.huh {κ : Type*} (t : Finset κ) : ∃ (f : Fin t.card → κ),
+--   (∀ i, f i ∈ t) ∧
+--   (Function.Injective f) ∧
+--   (Set.SurjOn f (.univ) t) := by
+--   classical
+--   let e := t.equivFin
+--   use fun i => (e.symm i).val
+--   constructor
+--   · intro i
+--     exact (e.symm i).property
+--   constructor
+--   · intro i j hij
+--     have : e.symm i = e.symm j := Subtype.ext hij
+--     exact e.symm.injective this
+--   · intro x hx
+--     use e ⟨x, hx⟩
+--     simp
+
+-- theorem h_half_weight_iSupIndep : iSupIndep (h_half_weight K) := by
+--   apply (iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero _).mpr
+--   intros s v h_weight h_sum_zero i hi
+--   obtain ⟨f, hf1, hf2, hf3⟩ := s.huh
+--   let van := Matrix.vandermonde (fun (j : Fin s.card) => 2 * f j)
+--   let V : Fin s.card → USl2 K := fun j => v (f j)
+--   have : van.det ≠ 0 := by
+--     apply Matrix.det_vandermonde_ne_zero_iff.mpr
+--     intro j1 j2 h_eq
+--     simp at h_eq
+--     exact hf2 h_eq
+--   have : (van.transpose.map (algebraMap ℤ (USl2 K))).mulVec V = 0 := by
+--     ext i
+--     simp
+
+--   Set.Range f = s ∧ ∀ j : Fin n, v (f j) ∈ h_half_weight K (f j) := by
+--     obtain ⟨n, f, hf⟩ := Finset.exists_fin_sum_equiv s
+--     use n, f
+--     constructor
+--     · rw [hf]
+--     · intro j
+--       rw [hf]
+--       exact h_weight (f j) (Finset.mem_range_self j)
+--   -- rw [h_half_weight_ad_h] at h_weight
 
 
-theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
-  sorry
+-- theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
+--   sorry
 
-theorem h_half_weight_directSum: DirectSum.IsInternal (h_half_weight K) := by
-  apply (DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top _).mpr
-  constructor
-  apply h_half_weight_iSupIndep
-  apply h_half_weight_iSup
+-- theorem h_half_weight_directSum: DirectSum.IsInternal (h_half_weight K) := by
+--   apply (DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top _).mpr
+--   constructor
+--   apply h_half_weight_iSupIndep
+--   apply h_half_weight_iSup
 
-end Field
+-- end Field
