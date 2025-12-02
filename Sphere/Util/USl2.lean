@@ -54,7 +54,7 @@ instance : SetLike.GradedOne (h_half_weight R) where
   one_mem := h_mem_one R
 
 instance : SetLike.GradedMul (h_half_weight R) where
-  mul_mem _ _ := h_mem_mul R
+  mul_mem hx hy := h_mem_mul R hx hy
 
 /-- Key observation: If x is in two different weight spaces, then 2(m-n) • x = 0.
 This is the first step toward showing weight spaces are disjoint. -/
@@ -76,7 +76,7 @@ theorem h_half_weight_ad_h {m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R m)
 
 section Field
 
-variable {R} (K : Type*) [Field K] [CharZero K]
+variable (K : Type*) [Field K] [CharZero K]
 
 /-- Over a field of characteristic zero, weight spaces for different weights have trivial intersection.
 This follows because 2(m-n) ≠ 0 when m ≠ n, so 2(m-n) • x = 0 implies x = 0. -/
