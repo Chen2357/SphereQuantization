@@ -1,191 +1,127 @@
--- import Sphere.Utilities
--- import Sphere.Basis
--- import Mathlib.Algebra.Group.Center
--- import Mathlib.Algebra.Star.Basic
--- import Mathlib.Algebra.Star.SelfAdjoint
--- import Mathlib.Algebra.Polynomial.Laurent
+import Mathlib.Data.Complex.Basic
+import Sphere.Util.Polynomial
+import Sphere.Util.Ring
+import Mathlib.Tactic.NoncommRing
 
--- noncomputable section
+noncomputable section
 
--- abbrev ℂℏ := LaurentPolynomial ℂ
--- -- We could provide these instances, but it is cumbersome.
--- @[instance] axiom ℂℏ.StarRing : StarRing ℂℏ
--- @[instance] axiom ℂℏ.StarModule : StarModule ℂ ℂℏ
+abbrev ℂℏ := LaurentPolynomial ℂ
 
--- def sqrt_ℏ : ℂℏˣ := {
---   val := LaurentPolynomial.T 1,
---   inv := ⅟ (LaurentPolynomial.T 1),
---   val_inv := mul_invOf_self _,
---   inv_val := invOf_mul_self _
--- }
--- @[simp] axiom star_sqrt_ℏ : star sqrt_ℏ = sqrt_ℏ
--- @[simp] lemma star_ℏ_inv : star (sqrt_ℏ⁻¹) = sqrt_ℏ⁻¹ := IsSelfAdjoint.inv star_sqrt_ℏ
+def sqrt_ℏ (n : ℤ) : ℂℏ := LaurentPolynomial.T n
 
--- axiom Op : Type
--- @[instance] axiom Op.Ring : Ring Op
--- @[instance] axiom Op.Algebra : Algebra ℂℏ Op
--- @[instance] axiom Op.StarRing : StarRing Op
--- @[instance] axiom Op.StarModule : StarModule ℂℏ Op
+@[simp]
+theorem star_sqrt_ℏ (n : ℤ) : star (sqrt_ℏ n) = sqrt_ℏ n := by simp [sqrt_ℏ]
 
--- instance : Algebra ℂ Op := Algebra.compHom Op (algebraMap ℂ ℂℏ)
+@[simp]
+theorem sqrt_ℏ_zero : sqrt_ℏ 0 = 1 := by simp [sqrt_ℏ]
 
--- instance : SMulCommClass ℂ ℂℏ Op where
---     smul_comm c x y := by
---         show (algebraMap ℂ ℂℏ c) • (x • y) = x • ((algebraMap ℂ ℂℏ c) • y)
---         rw [smul_smul, mul_comm, ←smul_smul]
+theorem sqrt_ℏ_add (m n : ℤ) : sqrt_ℏ (m + n) = sqrt_ℏ m * sqrt_ℏ n := by
+  unfold sqrt_ℏ
+  apply LaurentPolynomial.T_add
 
--- instance : IsScalarTower ℂ ℂℏ Op where
---   smul_assoc := by
---     intros c x y
---     show (c • x) • y = (algebraMap ℂ (ℂℏ) c) • (x • y)
---     simp [smul_smul, Algebra.smul_def]
---     rw [mul_assoc]
+axiom Op : Type
+@[instance] axiom Op.Ring : Ring Op
+@[instance] axiom Op.Algebra : Algebra ℂℏ Op
+@[instance] axiom Op.StarRing : StarRing Op
+@[instance] axiom Op.StarModule : StarModule ℂℏ Op
 
--- axiom a : Op
--- axiom X : Op
+instance : Algebra ℂ Op := Algebra.compHom Op (algebraMap ℂ ℂℏ)
 
--- def N : Op := (star a) * a
+instance : SMulCommClass ℂ ℂℏ Op where
+    smul_comm c x y := by
+        show (algebraMap ℂ ℂℏ c) • (x • y) = x • ((algebraMap ℂ ℂℏ c) • y)
+        rw [smul_smul, mul_comm, ←smul_smul]
 
--- axiom X_X : X * X = (1 : Op) - (sqrt_ℏ.val^2) • (N + Algebra.cast (2⁻¹ : ℂ))
--- lemma X_sq : X ^ 2 = (1 : Op) - (sqrt_ℏ.val^2) • (N + Algebra.cast (2⁻¹ : ℂ)) := by rw [sq]; exact X_X
+instance : IsScalarTower ℂ ℂℏ Op where
+  smul_assoc := by
+    intros c x y
+    show (c • x) • y = (algebraMap ℂ (ℂℏ) c) • (x • y)
+    simp [Algebra.smul_def]
+    rw [mul_assoc]
 
--- @[simp] lemma star_N : star N = N := by rw [N]; simp
--- @[simp] axiom star_X : star X = X
+axiom a : Op
+axiom Z : Op
 
--- def k3 : Op := Algebra.cast ((-Complex.I) • (sqrt_ℏ⁻¹.val)^2) + (Algebra.cast Complex.I : ℂℏ) • ((2 : ℂℏ) • N + Algebra.cast (2⁻¹ : ℂ))
--- def kp : Op := (Complex.I • sqrt_ℏ⁻¹.val) • ((star a) * X)
--- def km : Op := (Complex.I • sqrt_ℏ⁻¹.val) • (X * a)
+def N : Op := (star a) * a
 
--- def commutator : Op →ₗ[ℂℏ] Op →ₗ[ℂℏ] Op := {
---   toFun := fun x => {
---     toFun := fun y => x * y - y * x,
---     map_add' := by intros; noncomm_ring
---     map_smul' := by intros; simp [Algebra.mul_smul_comm, smul_sub]
---   },
---   map_add' := by intros; ext; simp; noncomm_ring
---   map_smul' := by intros; ext; simp [Algebra.mul_smul_comm, smul_sub]
--- }
+axiom Z_mul_Z : Z * Z = 1 - (sqrt_ℏ 2) • (N + (2⁻¹ : ℂ) • 1)
+lemma Z_sq : Z ^ 2 = 1 - (sqrt_ℏ 2) • (N + (2⁻¹ : ℂ) • 1) := by rw [sq]; exact Z_mul_Z
 
--- lemma commutator_comm (x y : Op) : commutator x y = -commutator y x := by simp [commutator]
+@[simp] lemma star_N : star N = N := by rw [N]; simp
+@[simp] axiom star_Z : star Z = Z
 
--- @[simp] lemma commutator_self (x : Op) : commutator x x = 0 := by simp [commutator]
+axiom Z_mul_N : Z * N = N * Z
+@[simp] lemma lie_N_Z : ⁅N, Z⁆ = 0 := by
+  simp [Bracket.bracket, Z_mul_N]
+@[simp] axiom lie_a_star_a : ⁅a, star a⁆ = 1
+lemma a_mul_star_a : a * star a = N + 1 := by
+  simp [←lie_a_star_a, Bracket.bracket, N]
+@[simp] lemma lie_star_a_a : ⁅star a, a⁆ = -1 := by rw [←lie_skew]; simp
+@[simp] lemma lie_N_a : ⁅N, a⁆ = -a := by
+  simp [N, mul_lie]
+@[simp] lemma lie_a_N : ⁅a, N⁆ = a := by
+  rw [←lie_skew, lie_N_a, neg_neg]
+@[simp] lemma lie_N_star_a : ⁅N, star a⁆ = star a := by
+  simp [N, mul_lie]
+@[simp] lemma lie_star_a_N : ⁅star a, N⁆ = -star a := by
+  rw [←lie_skew, lie_N_star_a]
 
--- @[simp] lemma commutator_nat (x : Op) : commutator x 1 = 0 := by simp [commutator]
+def Op.H : Op := -(sqrt_ℏ (-2) • 1) + (2 : ℤ) • N + (2⁻¹ : ℂ) • 1
+def Op.X : Op := Complex.I • sqrt_ℏ (-1) • ((star a) * Z)
+def Op.Y : Op := -Complex.I • sqrt_ℏ (-1) • (Z * a)
 
--- @[simp] lemma algebraMap_commutator' (x : ℂ) (y : Op) : commutator (algebraMap ℂ Op x) y = 0 := by simp [commutator, Algebra.algebraMap_eq_smul_one]
+open Op
 
--- @[simp] lemma commutator_algebraMap' (x : Op) (y : ℂ) : commutator x (algebraMap ℂ Op y) = 0 := by simp [commutator, Algebra.algebraMap_eq_smul_one]
+@[simp]
+theorem lie_H_X : ⁅H, X⁆ = (2 : ℤ) • X := by
+  simp [H, X, -zsmul_eq_mul, lie_mul, smul_comm (N:=ℤ)]
 
--- @[simp] lemma algebraMap_commutator (x : ℂℏ) (y : Op) : commutator (algebraMap ℂℏ Op x) y = 0 := by simp [commutator, Algebra.algebraMap_eq_smul_one]
+@[simp]
+theorem lie_X_H : ⁅X, H⁆ = -2 • X := by
+  rw [←lie_skew]
+  simp
 
--- @[simp] lemma commutator_algebraMap (x : Op) (y : ℂℏ) : commutator x (algebraMap ℂℏ Op y) = 0 := by simp [commutator, Algebra.algebraMap_eq_smul_one]
+@[simp]
+theorem lie_H_Y : ⁅H, Y⁆ = -(2 : ℤ) • Y := by
+  simp [H, Y, -zsmul_eq_mul, lie_mul, smul_comm (N:=ℤ)]
 
--- lemma commutator_mul (x y z : Op) : commutator x (y * z) = commutator x y * z + y * commutator x z := by
---   simp [commutator, mul_sub, sub_mul]
---   noncomm_ring
+@[simp]
+theorem lie_Y_H : ⁅Y, H⁆ = (2 : ℤ) • Y := by
+  rw [←lie_skew]
+  simp
 
--- lemma mul_commutator (x y z : Op) : commutator (x * y) z = x * commutator y z + commutator x z * y := by
---   simp [commutator, mul_sub, sub_mul]
---   noncomm_ring
+@[simp]
+theorem lie_X_Y : ⁅X, Y⁆ = H := by
+  simp [H, X, Y, Bracket.bracket]
+  have h₁ : star a * Z * (Z * a) = N * (1 - (sqrt_ℏ 2) • (N + (2⁻¹ : ℂ) • 1)) + (sqrt_ℏ 2) • N := by
+    calc _ = star a * (Z * Z) * a := by noncomm_ring
+    _ = star a * (1 - (sqrt_ℏ 2) • (N + (2⁻¹ : ℂ) • 1)) * a := by rw [Z_mul_Z]
+    _ = star a * (a * (1 - (sqrt_ℏ 2) • (N + (2⁻¹ : ℂ) • 1)) - ⁅a, 1 - (sqrt_ℏ 2) • (N + (2⁻¹ : ℂ) • 1)⁆) := by
+      simp [Bracket.bracket]
+      rw [mul_assoc]
+    _ = _ := by
+      rw [mul_sub, ←mul_assoc, sub_eq_add_neg]
+      congr
+      simp
+      rfl
+  have h₂ : Z * a * (star a * Z) = (N + 1) * (1 - sqrt_ℏ 2 • (N + (2⁻¹ : ℂ) • 1)) := by
+    calc _ = Z * (a * star a) * Z := by noncomm_ring
+    _ = Z * (N + 1) * Z := by rw [a_mul_star_a]
+    _ = (N + 1) * (Z * Z) := by
+      simp [mul_add, add_mul]
+      rw [←mul_assoc, Z_mul_N]
+    _ = _ := by
+      rw [Z_mul_Z]
+  rw [h₁, h₂]
+  simp [smul_comm (M:=ℂℏ) (N:=ℂ), mul_add, mul_sub, smul_add, smul_sub, add_mul]
+  simp [smul_smul, ←sqrt_ℏ_add]
+  ring_nf
+  simp
+  abel_nf
+  simp
+  abel
 
--- @[simp] axiom commutator_N_X : commutator N X = 0
--- @[simp] axiom commutator_a_star_a : commutator a (star a) = 1
--- @[simp] lemma commutator_star_a_a : commutator (star a) a = -1 := by rw [commutator_comm]; simp
-
--- lemma commutator_N_star_a : commutator N (star a) = star a := by
---   simp [N, mul_commutator]
-
--- theorem commutator_k3_kp : commutator k3 kp = (Algebra.cast (2 * Complex.I) : ℂℏ) • kp := by
---   unfold k3 kp
---   simp
---   simp [commutator_mul, commutator_N_star_a, smul_smul]
---   congr 1
---   norm_cast
---   ring_nf
---   simp [OfNat.ofNat]
-
--- lemma commutator_kp_k3 : commutator kp k3 = (Algebra.cast (-2 * Complex.I) : ℂℏ) • kp := by
---   rw [commutator_comm]
---   simp [commutator_k3_kp]
-
--- lemma commutator_N_a : commutator N a = -a := by
---   simp [N, mul_commutator]
-
--- -- attribute [-simp] AddMonoidAlgebra.coe_algebraMap
-
--- theorem commutator_k3_km : commutator k3 km = (Algebra.cast (-2 * Complex.I) : ℂℏ) • km := by
---   unfold k3 km
---   simp
---   simp [commutator_mul, commutator_N_a, smul_smul]
---   congr 1
---   simp [OfNat.ofNat]
---   ring
-
--- theorem commutator_km_k3 : commutator km k3 = (Algebra.cast (2 * Complex.I) : ℂℏ) • km := by
---   rw [commutator_comm]
---   simp [commutator_k3_km]
-
--- lemma mul_eq_add_commutator (x y : Op) : x * y = y * x + commutator x y := by simp [commutator]
-
--- lemma nat_mul_eq_smul {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (n : ℕ) (x : A) : (n : A) * x = (n : R) • x := by
---   show (algebraMap ℕ A n) * x = (algebraMap ℕ R n) • x
---   suffices (algebraMap ℕ A n) * x = (algebraMap R A (algebraMap ℕ R n)) * x by
---     rw [this, ←Algebra.smul_def]
---   rw [←IsScalarTower.algebraMap_apply]
-
--- lemma nat_mul_eq_smul' {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (n : ℕ) [n.AtLeastTwo] (x : A) : (OfNat.ofNat n : A) * x = (n : R) • x := by exact nat_mul_eq_smul n x
-
--- lemma C_eq_cast : (LaurentPolynomial.C Complex.I) = (Algebra.cast Complex.I) := by norm_cast
-
--- private lemma h1 : star a * X * (X * a) = (1 + (-1 • sqrt_ℏ.val ^ 2 • N + -1 • sqrt_ℏ.val ^ 2 • (Algebra.cast (2⁻¹ : ℂ) : Op))) * N + sqrt_ℏ.val ^ 2 • N := by
---   simp [N]
---   rw [mul_assoc]
---   nth_rewrite 2 [←mul_assoc]
---   simp [X_X]
---   rw [mul_eq_add_commutator]
---   simp [commutator_mul]
---   rw [commutator_comm, commutator_N_star_a]
---   rw [mul_assoc]
---   rw [mul_eq_add_commutator a (star a)]
---   simp [mul_add, N, smul_mul_assoc]
---   abel_nf
-
--- private lemma h2 : X * a * (star a * X) = (1 + (-1 • sqrt_ℏ.val ^ 2 • N + -1 • sqrt_ℏ.val ^ 2 • (Algebra.cast (2⁻¹ : ℂ) : Op))) + (1 - sqrt_ℏ.val ^ 2 • (N + (Algebra.cast (2⁻¹ : ℂ) : Op))) * N := by
---   rw [mul_assoc]
---   nth_rewrite 2 [←mul_assoc]
---   rw [mul_eq_add_commutator a (star a)]
---   have : N = star a * a := by rfl
---   simp [←this, add_mul]
---   rw [mul_eq_add_commutator N X]
---   simp [mul_add, ←mul_assoc, X_X, sub_mul, add_mul]
---   abel_nf
-
--- theorem commutator_kp_km : commutator kp km = (Algebra.cast (Complex.I) : ℂℏ) • k3 := by
---   unfold kp km
---   simp
---   custom_rewrite
---   simp [commutator]
---   rw [h1, h2]
---   unfold k3
---   simp [mul_add, mul_sub, add_mul, sub_mul, smul_smul]
---   abel_nf
---   simp only [C_eq_cast]
---   custom_rewrite
---   simp only [C_eq_cast]
---   norm_cast
---   simp [-AddMonoidAlgebra.coe_algebraMap]
---   norm_cast
---   simp only [@Algebra.smul_def ℂ ℂℏ]
---   ring_nf
---   norm_cast
---   simp
---   push_cast
---   rw [←add_assoc]
---   nth_rewrite 2 [add_comm]
---   rw [add_assoc]
---   congr 1
---   simp [Algebra.cast, Algebra.algebraMap_eq_smul_one, sq, mul_smul]
-
--- lemma commutator_km_kp : commutator km kp = (Algebra.cast (-Complex.I) : ℂℏ) • k3 := by
---   rw [commutator_comm]
---   simp [commutator_kp_km]
+@[simp]
+theorem lie_Y_X : ⁅Y, X⁆ = -H := by
+  rw [←lie_skew]
+  simp [lie_X_Y]
