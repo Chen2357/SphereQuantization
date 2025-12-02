@@ -5,7 +5,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "1a0aa08f1d1e8907fcd4458170a1bbfcc8642933",
+   "rev": "95384dff1969c3b17b7441c34f8d6daa3a3c0f3c",
    "name": "Cochain",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",

@@ -21,8 +21,6 @@ instance : Algebra ℂ 𝒜 := by unfold 𝒜; infer_instance
 abbrev 𝒳 := Derivation ℂ 𝒜 𝒜
 abbrev Ω := Cochain 𝒜 𝒳 𝒜
 
-instance : Module ℂ Ω := by infer_instance
-
 def fx (i : Fin 4) : 𝒜 := by
   unfold 𝒜
   exact 1 ⊗ₜ {
