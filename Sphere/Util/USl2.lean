@@ -72,9 +72,9 @@ end General
 
 section Field
 
-variable (K : Type*) [Field K]
+variable (K : Type*) [Field K] [CharZero K]
 
-/-- Over a field, weight spaces for different weights have trivial intersection.
+/-- Over a field of characteristic zero, weight spaces for different weights have trivial intersection.
 This follows because 2(m-n) ≠ 0 when m ≠ n, so 2(m-n) • x = 0 implies x = 0. -/
 theorem h_half_weight_disjoint {m n : ℤ} (hmn : m ≠ n) {x : USl2 K}
     (hm : x ∈ h_half_weight K m) (hn : x ∈ h_half_weight K n) : x = 0 := by
