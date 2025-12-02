@@ -7,13 +7,14 @@ import Mathlib.LinearAlgebra.Vandermonde
 
 open Sl2
 open UniversalEnvelopingAlgebra
+open LieAlgebra
 
 variable (R : Type*) [CommRing R] [Nontrivial R]
 
 abbrev USl2 := UniversalEnvelopingAlgebra R (Sl2 R)
 
 def h_half_weight (m : ℤ) : Submodule R (USl2 R) where
-  carrier := { x | ⁅ι R (h R), x⁆ = (2 * m) • x }
+  carrier := { x | ad R _ (ι R (h R)) x = (2 * m) • x }
   zero_mem' := by simp
   add_mem' := by
     intros
@@ -25,7 +26,7 @@ def h_half_weight (m : ℤ) : Submodule R (USl2 R) where
     simp [*]
 
 @[simp]
-theorem h_mem_iff {m : ℤ} {x : USl2 R} : x ∈ h_half_weight R m ↔ ⁅ι R (h R), x⁆ = (2 * m) • x := by rfl
+theorem h_mem_iff {m : ℤ} {x : USl2 R} : x ∈ h_half_weight R m ↔ ad R _ (ι R (h R)) x = (2 * m) • x := by rfl
 
 theorem h_mem_mul {n m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R n) {y : USl2 R} (hy : y ∈ h_half_weight R m) : x * y ∈ h_half_weight R (n + m) := by
   simp [-zsmul_eq_mul] at *
@@ -124,17 +125,17 @@ theorem h_half_weight_iSupIndep : iSupIndep (h_half_weight K) := by
   obtain ⟨f, hf1, hf2, hf3⟩ := s.huh
   have h_sum_zero : ∑ j, v (f j) = 0 := by
     sorry
-  let van := Matrix.vandermonde (fun (j : Fin s.card) => 2 * f j)
+  let van := Matrix.vandermonde (fun (j : Fin s.card) => (2 * f j : K))
   let V : Fin s.card → USl2 K := fun j => v (f j)
   have van_det : van.det ≠ 0 := by
     apply Matrix.det_vandermonde_ne_zero_iff.mpr
     intro j1 j2 h_eq
     simp at h_eq
     exact hf2 h_eq
-  have : (van.transpose.map (algebraMap ℤ (USl2 K))).mulVec V = 0 := by
+  have : (van.transpose.map (algebraMap K (USl2 K))).mulVec V = 0 := by
     ext i
-    simp? [Matrix.mulVec, dotProduct, van, V]
-    calc _ = ∑ j, (fun x => ⁅ι K (h K), x⁆)^[i] (v (f j)) := by {
+    simp [Matrix.mulVec, dotProduct, van, V]
+    calc _ = ∑ j, ((ad K _ (ι K (h K)))^(i : ℕ)) (v (f j)) := by {
       congr
       ext j
       rcases i with ⟨i, hi⟩
@@ -144,21 +145,28 @@ theorem h_half_weight_iSupIndep : iSupIndep (h_half_weight K) := by
       case zero => simp
       case succ i ih =>
         rw [add_comm]
-        simp [Function.iterate_add, ←ih]
-        have : (2 * ↑(f j)) ^ i * v (f j) = (2 * f j) ^ i •  v (f j) := by simp
+        conv_rhs => simp [pow_add, ←ih]
+        have : ((algebraMap K (USl2 K)) 2 * f j) ^ i * v (f j) = ((2 * f j)) ^ i • v (f j) := by
+          sorry
         rw [this, lie_smul]
         rw [add_comm, pow_succ]
         simp at h_weight
         rw [h_weight]
         simp
         noncomm_ring
+        sorry
         apply hf1
     }
-    _ = (fun x => ⁅ι K (h K), x⁆)^[i] (∑ j, v (f j)) := by
-      simp
-      sorry
-    _ = 0 := by rw [h_sum_zero]; simp; sorry
+    _ = ((ad K _ (ι K (h K)))^(i : ℕ)) (∑ j, v (f j)) := by simp
+    _ = 0 := by rw [h_sum_zero]; simp
+  -- have : algebraMap (Matrix (Fin s.card) (Fin s.card) ℤ) (Matrix (Fin s.card) (Fin s.card) (USl2 K)) (van.transpose).mulVec V = 0 := by
+  -- have : (van⁻¹.transpose.map ⇑(algebraMap ℤ (USl2 K))) * (van.transpose.map ⇑(algebraMap ℤ (USl2 K))) = 1 := by
+  --   sorry
+  -- have : V = 0 := by
+  --   apply Matrix.eq_zero_of_mulVec_eq_zero (M:=(van.transpose.map ⇑(algebraMap ℤ (USl2 K)))) _ this
   sorry
+    -- apply Matrix.mulVec_eq_zero_iff_of_invertible van_det.mp
+    -- exact this
 
 theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
   sorry
