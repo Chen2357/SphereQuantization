@@ -33,8 +33,7 @@ instance : SMulCommClass ℂ ℂℏ Op where
         rw [smul_smul, mul_comm, ←smul_smul]
 
 instance : IsScalarTower ℂ ℂℏ Op where
-  smul_assoc := by
-    intros c x y
+  smul_assoc c x y := by
     show (c • x) • y = (algebraMap ℂ (ℂℏ) c) • (x • y)
     simp [Algebra.smul_def]
     rw [mul_assoc]
