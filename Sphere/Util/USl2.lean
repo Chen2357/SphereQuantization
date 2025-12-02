@@ -3,6 +3,7 @@ import Sphere.Util.Ring
 import Mathlib.Algebra.Lie.UniversalEnveloping
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.DirectSum.Algebra
+import Mathlib.LinearAlgebra.Vandermonde
 
 open Sl2
 open UniversalEnvelopingAlgebra
@@ -68,6 +69,13 @@ theorem h_half_weight_eq_smul {m n : ℤ} {x : USl2 R}
     _ = (2 * m) • x - (2 * n) • x := by rw [sub_smul]
     _ = 0 := by rw [this, sub_self]
 
+/-- Applying `ad(h)` to an element of weight space m gives 2m times that element.
+This is the eigenvalue property that enables the Vandermonde argument for independence. -/
+theorem h_half_weight_ad_h {m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R m) :
+    ⁅ι R (h R), x⁆ = (2 * m) • x := by
+  simp only [h_mem_iff] at hx
+  exact hx
+
 end General
 
 section Field
@@ -87,15 +95,23 @@ theorem h_half_weight_disjoint {m n : ℤ} (hmn : m ≠ n) {x : USl2 K}
   exact (smul_eq_zero.mp h_eq).resolve_left h_ne
 
 /-- The decomposition of USl2 K into h-weight spaces over a field K.
-Since weight spaces are disjoint and span USl2 K, we can define a unique decomposition. -/
+
+The construction uses the Vandermonde argument: given any finite sum of weight vectors
+∑ᵢ vᵢ where vᵢ ∈ h_half_weight K kᵢ with distinct kᵢ, repeatedly applying ad(h) gives
+equations ∑ᵢ (2kᵢ)ʲ vᵢ = 0 for j = 0, 1, 2, ... The Vandermonde matrix with entries
+(2kᵢ)ʲ is invertible when the kᵢ are distinct (cf. `Matrix.det_vandermonde_ne_zero_iff`),
+so all vᵢ = 0. This proves independence, and spanning follows from the generators
+e, f, h having definite weights 1, -1, 0 respectively. -/
 def h_half_weight_decompose : USl2 K →ₐ[K] ⨁ i, h_half_weight K i := sorry
 
-/-- The decomposition is a left inverse of the canonical embedding. -/
+/-- The decomposition is a left inverse of the canonical embedding.
+This follows from the independence of weight spaces via the Vandermonde argument. -/
 theorem h_half_weight_decompose_left_inv :
     Function.LeftInverse (DirectSum.coeAlgHom (A := USl2 K) (h_half_weight K))
       (h_half_weight_decompose K) := sorry
 
-/-- The decomposition is a right inverse of the canonical embedding. -/
+/-- The decomposition is a right inverse of the canonical embedding.
+This follows from the spanning property: all generators have definite weights. -/
 theorem h_half_weight_decompose_right_inv :
     Function.RightInverse (DirectSum.coeAlgHom (A := USl2 K) (h_half_weight K))
       (h_half_weight_decompose K) := sorry
