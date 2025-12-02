@@ -65,27 +65,27 @@ lemma a_mul_star_a : a * star a = N + 1 := by
 @[simp] lemma lie_star_a_N : ⁅star a, N⁆ = -star a := by
   rw [←lie_skew, lie_N_star_a]
 
-def Op.H : Op := -(sqrt_ℏ (-2) • 1) + (2 : ℤ) • N + (2⁻¹ : ℂ) • 1
+def Op.H : Op := -(sqrt_ℏ (-2) • 1) + 2 • N + (2⁻¹ : ℂ) • 1
 def Op.X : Op := Complex.I • sqrt_ℏ (-1) • ((star a) * Z)
 def Op.Y : Op := -Complex.I • sqrt_ℏ (-1) • (Z * a)
 
 open Op
 
 @[simp]
-theorem lie_H_X : ⁅H, X⁆ = (2 : ℤ) • X := by
-  simp [H, X, -zsmul_eq_mul, lie_mul, smul_comm (N:=ℤ)]
+theorem lie_H_X : ⁅H, X⁆ = 2 • X := by
+  simp [H, X, -nsmul_eq_mul, -zsmul_eq_mul, lie_mul, smul_comm (N:=ℕ)]
 
 @[simp]
-theorem lie_X_H : ⁅X, H⁆ = -2 • X := by
+theorem lie_X_H : ⁅X, H⁆ = -(2 • X) := by
   rw [←lie_skew]
   simp
 
 @[simp]
-theorem lie_H_Y : ⁅H, Y⁆ = -(2 : ℤ) • Y := by
-  simp [H, Y, -zsmul_eq_mul, lie_mul, smul_comm (N:=ℤ)]
+theorem lie_H_Y : ⁅H, Y⁆ = -(2 • Y) := by
+  simp [H, Y, -nsmul_eq_mul, -zsmul_eq_mul, lie_mul, smul_comm (N:=ℕ)]
 
 @[simp]
-theorem lie_Y_H : ⁅Y, H⁆ = (2 : ℤ) • Y := by
+theorem lie_Y_H : ⁅Y, H⁆ = 2 • Y := by
   rw [←lie_skew]
   simp
 

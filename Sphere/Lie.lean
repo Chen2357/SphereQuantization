@@ -24,64 +24,64 @@ macro_rules
   )
 
 @[simp]
-lemma lie_ρ_φ1 : ⁅ρ, φ1⁆ = (2 : ℤ) • φ2 := by
+lemma lie_ρ_φ1 : ⁅ρ, φ1⁆ = 2 • φ2 := by
   unfold ρ φ1 φ2
   lie_basis_px_eq
 
 @[simp]
-lemma lie_φ1_ρ : ⁅φ1, ρ⁆ = -2 • φ2 := by
+lemma lie_φ1_ρ : ⁅φ1, ρ⁆ = -(2 • φ2) := by
   rw [←lie_skew]
   simp
 
 @[simp]
-lemma lie_ρ_φ2 : ⁅ρ, φ2⁆ = -2 • φ1 := by
+lemma lie_ρ_φ2 : ⁅ρ, φ2⁆ = -(2 • φ1) := by
   unfold ρ φ1 φ2
   lie_basis_px_eq
 
 @[simp]
-lemma lie_φ2_ρ : ⁅φ2, ρ⁆ = (2 : ℤ) • φ1 := by
+lemma lie_φ2_ρ : ⁅φ2, ρ⁆ = 2 • φ1 := by
   rw [←lie_skew]
   simp
 
 @[simp]
-lemma lie_φ1_φ2 : ⁅φ1, φ2⁆ = (2 : ℤ) • ρ := by
+lemma lie_φ1_φ2 : ⁅φ1, φ2⁆ = 2 • ρ := by
   unfold ρ φ1 φ2
   lie_basis_px_eq
 
 @[simp]
-lemma lie_φ2_φ1 : ⁅φ2, φ1⁆ = -2 • ρ := by
+lemma lie_φ2_φ1 : ⁅φ2, φ1⁆ = -(2 • ρ) := by
   rw [←lie_skew]
   simp
 
 @[simp]
-theorem lie_H_X : ⁅H, X⁆ = (2 : ℤ) • X := by
+theorem lie_H_X : ⁅H, X⁆ = 2 • X := by
   unfold H X
-  simp [←smul_assoc, smul_comm (N:=ℤ), -neg_smul]
+  simp [←smul_assoc, smul_comm (N:=ℕ), -neg_smul]
   ring_nf
   simp
   abel
 
 @[simp]
-theorem lie_X_H : ⁅X, H⁆ = -2 • X := by
+theorem lie_X_H : ⁅X, H⁆ = -(2 • X) := by
   rw [←lie_skew]
   simp
 
 @[simp]
-theorem lie_H_Y : ⁅H, Y⁆ = -2 • Y := by
+theorem lie_H_Y : ⁅H, Y⁆ = -(2 • Y) := by
   unfold H Y
-  simp [←smul_assoc, smul_comm (N:=ℤ), -neg_smul]
+  simp [←smul_assoc, smul_comm (N:=ℕ), -neg_smul]
   ring_nf
   simp
 
 @[simp]
-theorem lie_Y_H : ⁅Y, H⁆ = (2 : ℤ) • Y := by
+theorem lie_Y_H : ⁅Y, H⁆ = 2 • Y := by
   rw [←lie_skew]
   simp
 
 @[simp]
 theorem lie_X_Y : ⁅X, Y⁆ = H := by
   unfold H X Y
-  simp [←smul_assoc, smul_comm (N:=ℤ)]
+  simp [←smul_assoc, smul_comm (N:=ℕ)]
   simp only [←neg_smul, ←sub_smul, smul_smul]
   ring_nf
 
