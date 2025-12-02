@@ -94,10 +94,10 @@ axiom eq_of_apply_fx {x y : 𝒳} (h : ∀ i, x (fx i) = y (fx i)) : x = y
     . simp; ring
     . simp; ring
 
-def dx (i : Fin 4) : Ω := d (algebraMap 𝒜 Ω (fx i))
-axiom d_eq_in_dx (f : 𝒜) : d (algebraMap 𝒜 Ω f) = ∑ i : Fin 4, px i f • (dx i)
+def dx (i : Fin 4) : Ω := d ((fx i) • 1)
+axiom d_eq_in_dx (f : 𝒜) : d (f • (1 : Ω)) = ∑ i : Fin 4, px i f • (dx i)
 
-@[simp] theorem ι_px_dx (i j : Fin 4) : ι (px i) (dx j) = (ite (i = j) 1 0) - algebraMap 𝒜 Ω (fx i * fx j) := by simp [dx, ι_d]
+@[simp] theorem ι_px_dx (i j : Fin 4) : ι (px i) (dx j) = (ite (i = j) 1 0) - (fx i * fx j) • 1 := by simp [dx, ι_d, sub_smul]
 
 @[simp] theorem ν_eq_zero : ∑ i : Fin 4, fx i • (dx i) = 0 := by
   suffices (2 : ℂ) • ∑ i : Fin 4, fx i • (dx i) = 0 by
