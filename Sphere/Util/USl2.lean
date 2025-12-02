@@ -153,5 +153,4 @@ theorem h_half_weight_directSum: DirectSum.IsInternal (h_half_weight K) := by
   exact h_half_weight_iSupIndep K
   exact h_half_weight_iSup K
 
-
 end Field
