@@ -129,17 +129,6 @@ theorem h_half_weight_iSupIndep : iSupIndep (h_half_weight K) := by
   simp
 
 open Submodule in
-private lemma h_half_weight_finite_iSup_aux {x y : USl2 K}
-  (hx : ∃ s : Finset ℤ, x ∈ ⨆ (i ∈ s), h_half_weight K i)
-  (hy : ∃ s : Finset ℤ, y ∈ ⨆ (i ∈ s), h_half_weight K i) :
-  ∃ s : Finset ℤ, x * y ∈ ⨆ (i ∈ s), h_half_weight K i := by
-  rcases hx with ⟨s_x, hx⟩
-  rcases hy with ⟨s_y, hy⟩
-  rw [iSup_eq_span] at hx hy
-  conv => enter [1, _]; rw [iSup_eq_span]
-  sorry
-
-open Submodule in
 lemma h_half_weight_finite_iSup (x : USl2 K) : ∃ s : Finset ℤ, x ∈ ⨆ (i ∈ s), h_half_weight K i := by
   induction x using UniversalEnvelopingAlgebra.induction
   case algebraMap r =>
@@ -151,20 +140,20 @@ lemma h_half_weight_finite_iSup (x : USl2 K) : ∃ s : Finset ℤ, x ∈ ⨆ (i 
     rw [←add_apply_smul_h_e_f x]
     simp
     apply add_mem
-    . apply add_mem
-      . apply smul_mem
+    · apply add_mem
+      · apply smul_mem
         apply (show h_half_weight K 0 ≤ _ from _)
         exact h_mem_h K
         intro x hx
         apply mem_iSup_of_mem 0
         simp [hx]
-      . apply smul_mem
+      · apply smul_mem
         apply (show h_half_weight K 1 ≤ _ from _)
         exact h_mem_e K
         intro x hx
         apply mem_iSup_of_mem 1
         simp [hx]
-    . apply smul_mem
+    · apply smul_mem
       apply (show h_half_weight K (-1) ≤ _ from _)
       exact h_mem_f K
       intro x hx
@@ -175,62 +164,52 @@ lemma h_half_weight_finite_iSup (x : USl2 K) : ∃ s : Finset ℤ, x ∈ ⨆ (i 
     rcases hb with ⟨s_b, hb'⟩
     use s_a ∪ s_b
     apply add_mem
-    . apply (show ⨆ (i ∈ s_a), h_half_weight K ↑i ≤ _ from _) ha'
+    · apply (show ⨆ (i ∈ s_a), h_half_weight K ↑i ≤ _ from _) ha'
       rw [Finset.iSup_union]
       simp
-    . apply (show ⨆ (i ∈ s_b), h_half_weight K ↑i ≤ _ from _) hb'
+    · apply (show ⨆ (i ∈ s_b), h_half_weight K ↑i ≤ _ from _) hb'
       rw [Finset.iSup_union]
       simp
   case mul a b ha hb =>
     rcases ha with ⟨s_a, ha'⟩
     rcases hb with ⟨s_b, hb'⟩
-    rw [iSup_eq_span] at ha' hb'
-    induction ha' using span_induction
-    sorry
-    sorry
-    sorry
-    sorry
+    use Finset.image₂ (· + ·) s_a s_b
+    rw [iSup_eq_span] at ha' hb' ⊢
+    induction ha' using span_induction with
+    | mem a ha =>
+      simp only [Set.mem_iUnion] at ha
+      rcases ha with ⟨i, hi, ha⟩
+      induction hb' using span_induction with
+      | mem b hb =>
+        simp only [Set.mem_iUnion] at hb
+        rcases hb with ⟨j, hj, hb⟩
+        apply subset_span
+        simp only [Set.mem_iUnion]
+        exact ⟨i + j, Finset.mem_image₂_of_mem hi hj, h_mem_mul K ha hb⟩
+      | zero => simp
+      | add b₁ b₂ _ _ ih₁ ih₂ =>
+        rw [mul_add]
+        exact add_mem ih₁ ih₂
+      | smul c b _ ih =>
+        rw [mul_smul_comm]
+        exact smul_mem _ c ih
+    | zero => simp
+    | add a₁ a₂ _ _ ih₁ ih₂ =>
+      rw [add_mul]
+      exact add_mem ih₁ ih₂
+    | smul c a _ ih =>
+      rw [smul_mul_assoc]
+      exact smul_mem _ c ih
 
 open Submodule in
 theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
-  -- apply Submodule.eq_top_iff'.mpr
   simp [eq_top_iff']
   intro x
-  induction x using UniversalEnvelopingAlgebra.induction
-  case algebraMap r =>
-    rw [mem_iSup]
-    intro N hN
-    apply hN 0
-    apply h_mem_algebraMap
-  case ι x =>
-    rw [mem_iSup]
-    intro N hN
-    rw [←add_apply_smul_h_e_f x]
-    simp
-    apply add_mem
-    . apply add_mem
-      . apply hN 0
-        apply smul_mem
-        apply h_mem_h
-      . apply hN 1
-        apply smul_mem
-        apply h_mem_e
-    . apply hN (-1)
-      apply smul_mem
-      apply h_mem_f
-  case add a b ha hb =>
-    apply add_mem
-    exact ha
-    exact hb
-  case mul a b ha hb =>
-    rw [iSup_eq_span] at ha
-    rcases mem_span_finite_of_mem_span ha with ⟨s, _, ha'⟩
-    induction s using Finset.fin_induction
-    have : a ∈ Submodule.span K (⨆ i, h_half_weight K i) := by
-      refine Submodule.mem_span_of_mem ?_
-      sorry
-    sorry
-    sorry
+  rcases h_half_weight_finite_iSup K x with ⟨s, hx⟩
+  apply (show (⨆ (i ∈ s), h_half_weight K i) ≤ iSup (h_half_weight K) from ?_) hx
+  apply iSup₂_le
+  intro i _
+  exact le_iSup (h_half_weight K) i
 
 theorem h_half_weight_directSum: DirectSum.IsInternal (h_half_weight K) := by
   apply (DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top _).mpr
