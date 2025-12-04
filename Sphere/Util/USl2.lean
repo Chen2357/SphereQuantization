@@ -1,6 +1,7 @@
 import Sphere.Util.Sl2
 import Sphere.Util.Ring
-import Mathlib.Algebra.Lie.UniversalEnveloping
+import Sphere.Util.Finset
+import Sphere.Util.UniversalEnveloping
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.LinearAlgebra.Vandermonde
@@ -27,6 +28,9 @@ def h_half_weight (m : ℤ) : Submodule R (USl2 R) where
 
 @[simp]
 theorem h_mem_iff {m : ℤ} {x : USl2 R} : x ∈ h_half_weight R m ↔ ad R _ (ι R (h R)) x = (2 * m) • x := by rfl
+
+theorem h_mem_algebraMap {r : R} : algebraMap R (USl2 R) r ∈ h_half_weight R 0 := by
+  simp [h_mem_iff, Bracket.bracket, Algebra.commutes]
 
 theorem h_mem_mul {n m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R n) {y : USl2 R} (hy : y ∈ h_half_weight R m) : x * y ∈ h_half_weight R (n + m) := by
   simp [-zsmul_eq_mul] at *
@@ -70,106 +74,163 @@ section Field
 
 variable (K : Type*) [Field K] [CharZero K]
 
-instance : IsAddTorsionFree (USl2 K) where
-  nsmul_right_injective n hn x y hxy := by
-    have hne : (n : K) ≠ 0 := Nat.cast_ne_zero.mpr hn
-    exact smul_right_injective (USl2 K) hne hxy
+-- instance : IsAddTorsionFree (USl2 K) where
+--   nsmul_right_injective n hn x y hxy := by
+--     have hne : (n : K) ≠ 0 := Nat.cast_ne_zero.mpr hn
+--     exact smul_right_injective (USl2 K) hne hxy
 
--- Over a field of characteristic zero, weight spaces for different weights have trivial intersection.
--- This follows because 2(m-n) ≠ 0 when m ≠ n, so 2(m-n) • x = 0 implies x = 0.
-theorem h_half_weight_disjoint {m n : ℤ} (hmn : m ≠ n) {x : USl2 K}
-    (hm : x ∈ h_half_weight K m) (hn : x ∈ h_half_weight K n) : x = 0 := by
-  have h_eq := h_half_weight_eq_smul K hm hn
-  have h_ne : (2 : K) * (m - n) ≠ 0 := by
-    simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, sub_eq_zero]
-    intro h
-    simp at h
-    cases h
-    trivial
-  norm_cast at h_ne
-  apply (smul_eq_zero.mp h_eq).resolve_left h_ne
-
--- The weight spaces are independent: if m ≠ n then h_half_weight K m ⊓ h_half_weight K n = ⊥.
--- This is the key property for the graded structure derived from the Vandermonde argument.
-theorem h_half_weight_inf_eq_bot {m n : ℤ} (hmn : m ≠ n) :
-    h_half_weight K m ⊓ h_half_weight K n = ⊥ := by
-  ext x
-  simp only [Submodule.mem_inf, Submodule.mem_bot]
-  constructor
-  · intro ⟨hm, hn⟩
-    exact h_half_weight_disjoint K hmn hm hn
-  · intro hx
-    simp [hx]
-
-theorem Finset.huh {κ : Type*} (t : Finset κ) : ∃ (f : Fin t.card → κ),
-  (∀ i, f i ∈ t) ∧
-  (Function.Injective f) ∧
-  (Set.SurjOn f (.univ) t) := by
-  classical
-  let e := t.equivFin
-  use fun i => (e.symm i).val
-  constructor
-  · intro i
-    exact (e.symm i).property
-  constructor
-  · intro i j hij
-    have : e.symm i = e.symm j := Subtype.ext hij
-    exact e.symm.injective this
-  · intro x hx
-    use e ⟨x, hx⟩
-    simp
-
+open Matrix in
 theorem h_half_weight_iSupIndep : iSupIndep (h_half_weight K) := by
   apply (iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero _).mpr
   intros s v h_weight h_sum_zero i hi
-  obtain ⟨f, hf1, hf2, hf3⟩ := s.huh
-  have h_sum_zero : ∑ j, v (f j) = 0 := by
-    sorry
-  let van := Matrix.vandermonde (fun (j : Fin s.card) => (2 * f j : K))
-  let V : Fin s.card → USl2 K := fun j => v (f j)
+  induction s using Finset.fin_induction
+  rename_i n f f_inj
+  simp at hi
+  rcases hi with ⟨i, rfl⟩
+  simp [f_inj] at h_sum_zero
+  simp [-ad_apply, -ι_apply] at h_weight
+  let van := vandermonde fun j => (algebraMap ℤ K (2 * f j))
+  let V : Fin n → USl2 K := v ∘ f
+  have : ∀ j, v (f j) = V j := by intro; rfl
+  rw [this]
+  conv_lhs at h_sum_zero => enter [2, x]; rw [this]
+  conv at h_weight => ext; rw [this]
+
   have van_det : van.det ≠ 0 := by
-    apply Matrix.det_vandermonde_ne_zero_iff.mpr
+    apply det_vandermonde_ne_zero_iff.mpr
     intro j1 j2 h_eq
     simp at h_eq
-    exact hf2 h_eq
-  have : (van.transpose.map (algebraMap K (USl2 K))).mulVec V = 0 := by
-    ext i
-    simp [Matrix.mulVec, dotProduct, van, V]
-    calc _ = ∑ j, ((ad K _ (ι K (h K)))^(i : ℕ)) (v (f j)) := by {
-      congr
-      ext j
-      rcases i with ⟨i, hi⟩
-      simp
-      clear hi
-      induction i
-      case zero => simp
-      case succ i ih =>
-        rw [add_comm]
-        conv_rhs => simp [pow_add, ←ih]
-        have : ((algebraMap K (USl2 K)) 2 * f j) ^ i * v (f j) = ((2 * f j)) ^ i • v (f j) := by
-          sorry
-        rw [this, lie_smul]
-        rw [add_comm, pow_succ]
-        simp at h_weight
-        rw [h_weight]
-        simp
-        noncomm_ring
-        sorry
-        apply hf1
-    }
-    _ = ((ad K _ (ι K (h K)))^(i : ℕ)) (∑ j, v (f j)) := by simp
-    _ = 0 := by rw [h_sum_zero]; simp
-  -- have : algebraMap (Matrix (Fin s.card) (Fin s.card) ℤ) (Matrix (Fin s.card) (Fin s.card) (USl2 K)) (van.transpose).mulVec V = 0 := by
-  -- have : (van⁻¹.transpose.map ⇑(algebraMap ℤ (USl2 K))) * (van.transpose.map ⇑(algebraMap ℤ (USl2 K))) = 1 := by
-  --   sorry
-  -- have : V = 0 := by
-  --   apply Matrix.eq_zero_of_mulVec_eq_zero (M:=(van.transpose.map ⇑(algebraMap ℤ (USl2 K)))) _ this
-  sorry
-    -- apply Matrix.mulVec_eq_zero_iff_of_invertible van_det.mp
-    -- exact this
+    exact f_inj h_eq
 
-theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
+  suffices V = 0 by simp [this]
+  suffices V ᵥ* van.map (algebraMap K (USl2 K)) ᵥ* van⁻¹.map (algebraMap K (USl2 K)) = 0 by
+    simp [←Matrix.map_mul, van_det] at this
+    exact this
+  suffices V ᵥ* van.map (algebraMap K (USl2 K)) = 0 by
+    rw [this]
+    simp
+
+  ext i
+  simp [vecMul, dotProduct, van, -algebraMap_int_eq, -eq_intCast, -map_mul, ←map_pow, ←Algebra.commutes]
+  have : ∀ i j, (algebraMap K (USl2 K)) ((algebraMap ℤ K) ((2 * f j) ^ i)) * V j = ((ad K _ (ι K (h K)))^i) (V j) := by
+    intros i j
+    induction i
+    case zero => simp
+    case succ i ih =>
+      conv_rhs => rw [add_comm]; simp [pow_add, -ad_apply, -ι_apply, ←ih, -map_pow]
+      conv_rhs =>
+        enter [2]
+        equals (2 * f j) ^ i • V j => simp [mul_pow]; rfl
+      rw [map_zsmul, h_weight]
+      simp [pow_succ, mul_assoc]
+      rfl
+  conv_lhs => enter [2, _]; rw [this]
+  rw [←map_sum, h_sum_zero]
+  simp
+
+open Submodule in
+private lemma h_half_weight_finite_iSup_aux {x y : USl2 K}
+  (hx : ∃ s : Finset ℤ, x ∈ ⨆ (i ∈ s), h_half_weight K i)
+  (hy : ∃ s : Finset ℤ, y ∈ ⨆ (i ∈ s), h_half_weight K i) :
+  ∃ s : Finset ℤ, x * y ∈ ⨆ (i ∈ s), h_half_weight K i := by
+  rcases hx with ⟨s_x, hx⟩
+  rcases hy with ⟨s_y, hy⟩
+  rw [iSup_eq_span] at hx hy
+  conv => enter [1, _]; rw [iSup_eq_span]
   sorry
+
+open Submodule in
+lemma h_half_weight_finite_iSup (x : USl2 K) : ∃ s : Finset ℤ, x ∈ ⨆ (i ∈ s), h_half_weight K i := by
+  induction x using UniversalEnvelopingAlgebra.induction
+  case algebraMap r =>
+    use {0}
+    simp [-ι_apply, -ad_apply]
+    simp [Bracket.bracket, Algebra.commutes]
+  case ι x =>
+    use {1, 0, -1}
+    rw [←add_apply_smul_h_e_f x]
+    simp
+    apply add_mem
+    . apply add_mem
+      . apply smul_mem
+        apply (show h_half_weight K 0 ≤ _ from _)
+        exact h_mem_h K
+        intro x hx
+        apply mem_iSup_of_mem 0
+        simp [hx]
+      . apply smul_mem
+        apply (show h_half_weight K 1 ≤ _ from _)
+        exact h_mem_e K
+        intro x hx
+        apply mem_iSup_of_mem 1
+        simp [hx]
+    . apply smul_mem
+      apply (show h_half_weight K (-1) ≤ _ from _)
+      exact h_mem_f K
+      intro x hx
+      apply mem_iSup_of_mem (-1)
+      simp [hx]
+  case add a b ha hb =>
+    rcases ha with ⟨s_a, ha'⟩
+    rcases hb with ⟨s_b, hb'⟩
+    use s_a ∪ s_b
+    apply add_mem
+    . apply (show ⨆ (i ∈ s_a), h_half_weight K ↑i ≤ _ from _) ha'
+      rw [Finset.iSup_union]
+      simp
+    . apply (show ⨆ (i ∈ s_b), h_half_weight K ↑i ≤ _ from _) hb'
+      rw [Finset.iSup_union]
+      simp
+  case mul a b ha hb =>
+    rcases ha with ⟨s_a, ha'⟩
+    rcases hb with ⟨s_b, hb'⟩
+    rw [iSup_eq_span] at ha' hb'
+    induction ha' using span_induction
+    sorry
+    sorry
+    sorry
+    sorry
+
+open Submodule in
+theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
+  -- apply Submodule.eq_top_iff'.mpr
+  simp [eq_top_iff']
+  intro x
+  induction x using UniversalEnvelopingAlgebra.induction
+  case algebraMap r =>
+    rw [mem_iSup]
+    intro N hN
+    apply hN 0
+    apply h_mem_algebraMap
+  case ι x =>
+    rw [mem_iSup]
+    intro N hN
+    rw [←add_apply_smul_h_e_f x]
+    simp
+    apply add_mem
+    . apply add_mem
+      . apply hN 0
+        apply smul_mem
+        apply h_mem_h
+      . apply hN 1
+        apply smul_mem
+        apply h_mem_e
+    . apply hN (-1)
+      apply smul_mem
+      apply h_mem_f
+  case add a b ha hb =>
+    apply add_mem
+    exact ha
+    exact hb
+  case mul a b ha hb =>
+    rw [iSup_eq_span] at ha
+    rcases mem_span_finite_of_mem_span ha with ⟨s, _, ha'⟩
+    induction s using Finset.fin_induction
+    have : a ∈ Submodule.span K (⨆ i, h_half_weight K i) := by
+      refine Submodule.mem_span_of_mem ?_
+      sorry
+    sorry
+    sorry
 
 theorem h_half_weight_directSum: DirectSum.IsInternal (h_half_weight K) := by
   apply (DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top _).mpr
