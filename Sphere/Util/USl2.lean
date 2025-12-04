@@ -174,32 +174,25 @@ lemma h_half_weight_finite_iSup (x : USl2 K) : ∃ s : Finset ℤ, x ∈ ⨆ (i 
     rcases ha with ⟨s_a, ha'⟩
     rcases hb with ⟨s_b, hb'⟩
     use Finset.image₂ (· + ·) s_a s_b
-    rw [iSup_eq_span] at ha' hb' ⊢
-    induction ha' using span_induction with
-    | mem a ha =>
-      simp only [Set.mem_iUnion, SetLike.mem_coe] at ha
-      obtain ⟨i, hi, ha⟩ := ha
-      induction hb' using span_induction with
-      | mem b hb =>
-        simp only [Set.mem_iUnion, SetLike.mem_coe] at hb
-        obtain ⟨j, hj, hb⟩ := hb
-        apply subset_span
-        simp only [Set.mem_iUnion, SetLike.mem_coe]
-        exact ⟨i + j, Finset.mem_image₂_of_mem hi hj, h_mem_mul K ha hb⟩
-      | zero => simp
-      | add b₁ b₂ _ _ ih₁ ih₂ =>
+    refine Submodule.iSup_induction (C := fun a => ∀ b, b ∈ ⨆ (i ∈ s_b), h_half_weight K i →
+        a * b ∈ ⨆ (i ∈ Finset.image₂ (· + ·) s_a s_b), h_half_weight K i)
+      (ι := ℤ) (p := fun i => i ∈ s_a) (S := h_half_weight K) ha' ?_ ?_ ?_ b hb'
+    · intro i hi x hx b hb
+      refine Submodule.iSup_induction (C := fun b => x * b ∈ ⨆ (i ∈ Finset.image₂ (· + ·) s_a s_b), h_half_weight K i)
+        (ι := ℤ) (p := fun j => j ∈ s_b) (S := h_half_weight K) hb ?_ ?_ ?_
+      · intro j hj y hy
+        apply mem_iSup_of_mem (i + j)
+        apply mem_iSup_of_mem (Finset.mem_image₂_of_mem hi hj)
+        exact h_mem_mul K hx hy
+      · simp
+      · intro y₁ y₂ ih₁ ih₂
         rw [mul_add]
         exact add_mem ih₁ ih₂
-      | smul c b _ ih =>
-        rw [mul_smul_comm]
-        exact smul_mem _ c ih
-    | zero => simp
-    | add a₁ a₂ _ _ ih₁ ih₂ =>
+    · intro b _
+      simp
+    · intro x₁ x₂ ih₁ ih₂ b hb
       rw [add_mul]
-      exact add_mem ih₁ ih₂
-    | smul c a _ ih =>
-      rw [smul_mul_assoc]
-      exact smul_mem _ c ih
+      exact add_mem (ih₁ b hb) (ih₂ b hb)
 
 open Submodule in
 theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
