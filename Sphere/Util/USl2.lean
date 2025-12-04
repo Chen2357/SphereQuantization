@@ -1,10 +1,10 @@
 import Sphere.Util.Sl2
-import Sphere.Util.Ring
 import Sphere.Util.Finset
 import Sphere.Util.UniversalEnveloping
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.LinearAlgebra.Vandermonde
+import LieRinehart.Basic
 
 open Sl2
 open UniversalEnvelopingAlgebra
@@ -38,7 +38,7 @@ theorem h_mem_algebraMap {r : R} : algebraMap R (USl2 R) r ∈ h_half_weight R 0
 
 theorem h_mem_mul {n m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R n) {y : USl2 R} (hy : y ∈ h_half_weight R m) : x * y ∈ h_half_weight R (n + m) := by
   simp [-zsmul_eq_mul] at *
-  simp [lie_mul, *, -zsmul_eq_mul, ←add_smul]
+  simp [*, -zsmul_eq_mul, ←add_smul, lier_mul]
   ring_nf
 
 theorem h_mem_h : USl2.H R ∈ h_half_weight R 0 := by

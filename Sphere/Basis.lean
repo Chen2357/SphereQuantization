@@ -185,16 +185,13 @@ theorem d_eq_in_HXY (f : 𝒜) : d (f • 1) = (𝒳.H f) • Ω.H' + (𝒳.X f)
   simp [smul_add, smul_sub, smul_smul, smul_comm (M:=𝒜) (N:=ℂ)]
   abel_nf
   congr 1
-  simp [←neg_smul]
+  simp [←smul_assoc]
   collect Ω.l1
   congr
   . abel_nf
-    simp
-    rw [←smul_assoc]
-    simp
-  . rw [←smul_assoc, ←smul_assoc, ←add_smul]
-    congr
     simp [←smul_assoc]
+  . rw [←add_smul]
+    congr
     abel_nf
     simp [←smul_assoc]
     ring_nf

@@ -1,6 +1,7 @@
 import Sphere.Util.USl2
 import Sphere.Operator
 import Sphere.Lie
+import Sphere.Util.LieAlgebra
 import Mathlib.Algebra.Lie.UniversalEnveloping
 
 noncomputable section
@@ -38,3 +39,10 @@ def to_end_𝒜 : (USl2 ℂ) →ₐ[ℂ] Module.End ℂ 𝒜 := UniversalEnvelop
     rw [←𝒳.lie_H_Y]
     rfl
   )
+
+open LieAlgebra
+
+-- lemma ad_X_pow_Y_pow.aux (n : ℕ) : ((ad ℂ _ (USl2.X ℂ))^n) ((USl2.Y ℂ)^n)
+
+theorem ad_X_pow_Y_pow (n : ℕ) : ((ad ℂ _ (USl2.X ℂ))^n) ((USl2.Y ℂ)^n) = (-1) ^ n • ((ad ℂ _ (USl2.Y ℂ))^n) ((USl2.X ℂ)^n) := by
+  sorry

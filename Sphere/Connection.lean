@@ -8,7 +8,8 @@ abbrev ΩOp := Ω ⊗[ℂ] Op
 
 noncomputable section
 
-instance : Algebra ℂ Ω := by infer_instance
+instance : SMulCommClass ℂ Ω Ω := by infer_instance
+instance : IsScalarTower ℂ Ω Ω := by infer_instance
 
 def d_lift : Module.End ℂ ΩOp := TensorProduct.lift {
   toFun x := LinearMap.comp
@@ -17,6 +18,11 @@ def d_lift : Module.End ℂ ΩOp := TensorProduct.lift {
   map_add' := by intros; ext; simp [add_tmul]
   map_smul' := by intros; ext; simp
 }
+
+instance : Ring ΩOp := by infer_instance
+
+set_option synthInstance.maxHeartbeats 200000 in
+instance : SMulCommClass ℂ ΩOp ΩOp := by infer_instance
 
 def A : ΩOp := Ω.H' ⊗ₜ[ℂ] Op.H + Ω.X' ⊗ₜ[ℂ] Op.X + Ω.Y' ⊗ₜ[ℂ] Op.Y
 

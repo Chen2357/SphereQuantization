@@ -1,7 +1,7 @@
 import Mathlib.Data.Complex.Basic
 import Sphere.Util.Polynomial
-import Sphere.Util.Ring
 import Mathlib.Tactic.NoncommRing
+import LieRinehart.Basic
 
 noncomputable section
 
@@ -57,11 +57,11 @@ lemma a_mul_star_a : a * star a = N + 1 := by
   simp [←lie_a_star_a, Bracket.bracket, N]
 @[simp] lemma lie_star_a_a : ⁅star a, a⁆ = -1 := by rw [←lie_skew]; simp
 @[simp] lemma lie_N_a : ⁅N, a⁆ = -a := by
-  simp [N, mul_lie]
+  simp [N, ←lie_skew _ a, lier_mul]
 @[simp] lemma lie_a_N : ⁅a, N⁆ = a := by
   rw [←lie_skew, lie_N_a, neg_neg]
 @[simp] lemma lie_N_star_a : ⁅N, star a⁆ = star a := by
-  simp [N, mul_lie]
+  simp [N, ←lie_skew _ (star a), lier_mul]
 @[simp] lemma lie_star_a_N : ⁅star a, N⁆ = -star a := by
   rw [←lie_skew, lie_N_star_a]
 
@@ -73,7 +73,7 @@ open Op
 
 @[simp]
 theorem lie_H_X : ⁅H, X⁆ = 2 • X := by
-  simp [H, X, -nsmul_eq_mul, -zsmul_eq_mul, lie_mul, smul_comm (N:=ℕ)]
+  simp [H, X, -nsmul_eq_mul, -zsmul_eq_mul, smul_comm (N:=ℕ), lier_mul]
 
 @[simp]
 theorem lie_X_H : ⁅X, H⁆ = -(2 • X) := by
@@ -82,7 +82,7 @@ theorem lie_X_H : ⁅X, H⁆ = -(2 • X) := by
 
 @[simp]
 theorem lie_H_Y : ⁅H, Y⁆ = -(2 • Y) := by
-  simp [H, Y, -nsmul_eq_mul, -zsmul_eq_mul, lie_mul, smul_comm (N:=ℕ)]
+  simp [H, Y, -nsmul_eq_mul, -zsmul_eq_mul, smul_comm (N:=ℕ), lier_mul]
 
 @[simp]
 theorem lie_Y_H : ⁅Y, H⁆ = 2 • Y := by
