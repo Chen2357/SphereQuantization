@@ -10,7 +10,7 @@ noncomputable section
 
 instance : Algebra ℂ Ω := by infer_instance
 
-def d_lift : ΩOp →ₗ[ℂ] ΩOp := TensorProduct.lift {
+def d_lift : Module.End ℂ ΩOp := TensorProduct.lift {
   toFun x := LinearMap.comp
     (Algebra.TensorProduct.mul ((Algebra.TensorProduct.includeLeft : Ω →ₐ[ℂ] ΩOp) (Cochain.d x)))
     (Algebra.TensorProduct.includeRight.toLinearMap : Op →ₗ[ℂ] ΩOp)
@@ -20,7 +20,7 @@ def d_lift : ΩOp →ₗ[ℂ] ΩOp := TensorProduct.lift {
 
 def A : ΩOp := Ω.H' ⊗ₜ[ℂ] Op.H + Ω.X' ⊗ₜ[ℂ] Op.X + Ω.Y' ⊗ₜ[ℂ] Op.Y
 
-def del : ΩOp →ₗ[ℂ] ΩOp := d_lift + {
+def del : Module.End ℂ ΩOp := d_lift + {
   toFun x := A * x - x * A
   map_add' := by intros; noncomm_ring
   map_smul' := by intros; simp [smul_sub]; rw [smul_mul_assoc, mul_smul_comm]
