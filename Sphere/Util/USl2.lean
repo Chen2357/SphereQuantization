@@ -14,8 +14,12 @@ variable (R : Type*) [CommRing R] [Nontrivial R]
 
 abbrev USl2 := UniversalEnvelopingAlgebra R (Sl2 R)
 
+abbrev USl2.H : USl2 R := ι R (h R)
+abbrev USl2.X : USl2 R  := ι R (e R)
+abbrev USl2.Y : USl2 R  := ι R (f R)
+
 def h_half_weight (m : ℤ) : Submodule R (USl2 R) where
-  carrier := { x | ad R _ (ι R (h R)) x = (2 * m) • x }
+  carrier := { x | ad R _ (USl2.H R) x = (2 * m) • x }
   zero_mem' := by simp
   add_mem' := by
     intros
@@ -27,7 +31,7 @@ def h_half_weight (m : ℤ) : Submodule R (USl2 R) where
     simp [*]
 
 @[simp]
-theorem h_mem_iff {m : ℤ} {x : USl2 R} : x ∈ h_half_weight R m ↔ ad R _ (ι R (h R)) x = (2 * m) • x := by rfl
+theorem h_mem_iff {m : ℤ} {x : USl2 R} : x ∈ h_half_weight R m ↔ ad R _ (USl2.H R) x = (2 * m) • x := by rfl
 
 theorem h_mem_algebraMap {r : R} : algebraMap R (USl2 R) r ∈ h_half_weight R 0 := by
   simp [h_mem_iff, Bracket.bracket, Algebra.commutes]
@@ -37,14 +41,14 @@ theorem h_mem_mul {n m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R n) {y : U
   simp [lie_mul, *, -zsmul_eq_mul, ←add_smul]
   ring_nf
 
-theorem h_mem_h : ι R (h R) ∈ h_half_weight R 0 := by
+theorem h_mem_h : USl2.H R ∈ h_half_weight R 0 := by
   simp
 
-theorem h_mem_e : ι R (e R) ∈ h_half_weight R 1 := by
+theorem h_mem_e : USl2.X R ∈ h_half_weight R 1 := by
   simp [-zsmul_eq_mul, -ι_apply, ←LieHom.map_lie]
   simp
 
-theorem h_mem_f : ι R (f R) ∈ h_half_weight R (-1) := by
+theorem h_mem_f : USl2.Y R ∈ h_half_weight R (-1) := by
   simp [-zsmul_eq_mul, -ι_apply, ←LieHom.map_lie]
   simp
 
@@ -73,11 +77,6 @@ theorem h_half_weight_ad_h {m : ℤ} {x : USl2 R} (hx : x ∈ h_half_weight R m)
 section Field
 
 variable (K : Type*) [Field K] [CharZero K]
-
--- instance : IsAddTorsionFree (USl2 K) where
---   nsmul_right_injective n hn x y hxy := by
---     have hne : (n : K) ≠ 0 := Nat.cast_ne_zero.mpr hn
---     exact smul_right_injective (USl2 K) hne hxy
 
 open Matrix in
 theorem h_half_weight_iSupIndep : iSupIndep (h_half_weight K) := by
@@ -129,71 +128,7 @@ theorem h_half_weight_iSupIndep : iSupIndep (h_half_weight K) := by
   simp
 
 open Submodule in
-private lemma h_half_weight_finite_iSup_aux {x y : USl2 K}
-  (hx : ∃ s : Finset ℤ, x ∈ ⨆ (i ∈ s), h_half_weight K i)
-  (hy : ∃ s : Finset ℤ, y ∈ ⨆ (i ∈ s), h_half_weight K i) :
-  ∃ s : Finset ℤ, x * y ∈ ⨆ (i ∈ s), h_half_weight K i := by
-  rcases hx with ⟨s_x, hx⟩
-  rcases hy with ⟨s_y, hy⟩
-  rw [iSup_eq_span] at hx hy
-  conv => enter [1, _]; rw [iSup_eq_span]
-  sorry
-
-open Submodule in
-lemma h_half_weight_finite_iSup (x : USl2 K) : ∃ s : Finset ℤ, x ∈ ⨆ (i ∈ s), h_half_weight K i := by
-  induction x using UniversalEnvelopingAlgebra.induction
-  case algebraMap r =>
-    use {0}
-    simp [-ι_apply, -ad_apply]
-    simp [Bracket.bracket, Algebra.commutes]
-  case ι x =>
-    use {1, 0, -1}
-    rw [←add_apply_smul_h_e_f x]
-    simp
-    apply add_mem
-    . apply add_mem
-      . apply smul_mem
-        apply (show h_half_weight K 0 ≤ _ from _)
-        exact h_mem_h K
-        intro x hx
-        apply mem_iSup_of_mem 0
-        simp [hx]
-      . apply smul_mem
-        apply (show h_half_weight K 1 ≤ _ from _)
-        exact h_mem_e K
-        intro x hx
-        apply mem_iSup_of_mem 1
-        simp [hx]
-    . apply smul_mem
-      apply (show h_half_weight K (-1) ≤ _ from _)
-      exact h_mem_f K
-      intro x hx
-      apply mem_iSup_of_mem (-1)
-      simp [hx]
-  case add a b ha hb =>
-    rcases ha with ⟨s_a, ha'⟩
-    rcases hb with ⟨s_b, hb'⟩
-    use s_a ∪ s_b
-    apply add_mem
-    . apply (show ⨆ (i ∈ s_a), h_half_weight K ↑i ≤ _ from _) ha'
-      rw [Finset.iSup_union]
-      simp
-    . apply (show ⨆ (i ∈ s_b), h_half_weight K ↑i ≤ _ from _) hb'
-      rw [Finset.iSup_union]
-      simp
-  case mul a b ha hb =>
-    rcases ha with ⟨s_a, ha'⟩
-    rcases hb with ⟨s_b, hb'⟩
-    rw [iSup_eq_span] at ha' hb'
-    induction ha' using span_induction
-    sorry
-    sorry
-    sorry
-    sorry
-
-open Submodule in
 theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
-  -- apply Submodule.eq_top_iff'.mpr
   simp [eq_top_iff']
   intro x
   induction x using UniversalEnvelopingAlgebra.induction
@@ -232,10 +167,14 @@ theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
     sorry
     sorry
 
-theorem h_half_weight_directSum: DirectSum.IsInternal (h_half_weight K) := by
+theorem h_half_weight_is_internal_directSum: DirectSum.IsInternal (h_half_weight K) := by
   apply (DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top _).mpr
   constructor
   apply h_half_weight_iSupIndep
   apply h_half_weight_iSup
+
+noncomputable instance : DirectSum.Decomposition (h_half_weight K) := DirectSum.IsInternal.chooseDecomposition _ (h_half_weight_is_internal_directSum K)
+
+noncomputable instance : GradedAlgebra (h_half_weight K) where
 
 end Field
