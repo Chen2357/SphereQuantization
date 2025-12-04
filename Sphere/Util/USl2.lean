@@ -140,20 +140,20 @@ lemma h_half_weight_finite_iSup (x : USl2 K) : ∃ s : Finset ℤ, x ∈ ⨆ (i 
     rw [←add_apply_smul_h_e_f x]
     simp
     apply add_mem
-    · apply add_mem
-      · apply smul_mem
+    . apply add_mem
+      . apply smul_mem
         apply (show h_half_weight K 0 ≤ _ from _)
         exact h_mem_h K
         intro x hx
         apply mem_iSup_of_mem 0
         simp [hx]
-      · apply smul_mem
+      . apply smul_mem
         apply (show h_half_weight K 1 ≤ _ from _)
         exact h_mem_e K
         intro x hx
         apply mem_iSup_of_mem 1
         simp [hx]
-    · apply smul_mem
+    . apply smul_mem
       apply (show h_half_weight K (-1) ≤ _ from _)
       exact h_mem_f K
       intro x hx
@@ -164,10 +164,10 @@ lemma h_half_weight_finite_iSup (x : USl2 K) : ∃ s : Finset ℤ, x ∈ ⨆ (i 
     rcases hb with ⟨s_b, hb'⟩
     use s_a ∪ s_b
     apply add_mem
-    · apply (show ⨆ (i ∈ s_a), h_half_weight K ↑i ≤ _ from _) ha'
+    . apply (show ⨆ (i ∈ s_a), h_half_weight K ↑i ≤ _ from _) ha'
       rw [Finset.iSup_union]
       simp
-    · apply (show ⨆ (i ∈ s_b), h_half_weight K ↑i ≤ _ from _) hb'
+    . apply (show ⨆ (i ∈ s_b), h_half_weight K ↑i ≤ _ from _) hb'
       rw [Finset.iSup_union]
       simp
   case mul a b ha hb =>
@@ -177,14 +177,14 @@ lemma h_half_weight_finite_iSup (x : USl2 K) : ∃ s : Finset ℤ, x ∈ ⨆ (i 
     rw [iSup_eq_span] at ha' hb' ⊢
     induction ha' using span_induction with
     | mem a ha =>
-      simp only [Set.mem_iUnion] at ha
-      rcases ha with ⟨i, hi, ha⟩
+      simp only [Set.mem_iUnion, SetLike.mem_coe] at ha
+      obtain ⟨i, hi, ha⟩ := ha
       induction hb' using span_induction with
       | mem b hb =>
-        simp only [Set.mem_iUnion] at hb
-        rcases hb with ⟨j, hj, hb⟩
+        simp only [Set.mem_iUnion, SetLike.mem_coe] at hb
+        obtain ⟨j, hj, hb⟩ := hb
         apply subset_span
-        simp only [Set.mem_iUnion]
+        simp only [Set.mem_iUnion, SetLike.mem_coe]
         exact ⟨i + j, Finset.mem_image₂_of_mem hi hj, h_mem_mul K ha hb⟩
       | zero => simp
       | add b₁ b₂ _ _ ih₁ ih₂ =>
@@ -205,7 +205,7 @@ open Submodule in
 theorem h_half_weight_iSup : iSup (h_half_weight K) = ⊤ := by
   simp [eq_top_iff']
   intro x
-  rcases h_half_weight_finite_iSup K x with ⟨s, hx⟩
+  obtain ⟨s, hx⟩ := h_half_weight_finite_iSup K x
   apply (show (⨆ (i ∈ s), h_half_weight K i) ≤ iSup (h_half_weight K) from ?_) hx
   apply iSup₂_le
   intro i _
