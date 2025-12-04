@@ -11,7 +11,7 @@ def to_Op : (USl2 ℂ) →ₐ[ℂ] Op := UniversalEnvelopingAlgebra.lift ℂ <| 
   map_smul' := by  simp [smul_smul]
 } (by simp) (by simp) (by simp)
 
-@[simp] def to_end_𝒜_linear : Sl2 ℂ →ₗ[ℂ] (𝒜 →ₗ[ℂ] 𝒜) := {
+@[simp] def to_end_𝒜_linear : Sl2 ℂ →ₗ[ℂ] Module.End ℂ 𝒜 := {
   toFun x := {
     toFun f := (x 0 • 𝒳.H + x 1 • 𝒳.X + x 2 • 𝒳.Y) f
     map_add' := by intros; simp [map_add]
@@ -21,7 +21,7 @@ def to_Op : (USl2 ℂ) →ₐ[ℂ] Op := UniversalEnvelopingAlgebra.lift ℂ <| 
   map_smul' := by intros; ext; simp [smul_smul]
 }
 
-def to_end_𝒜 : (USl2 ℂ) →ₐ[ℂ] (𝒜 →ₗ[ℂ] 𝒜) := UniversalEnvelopingAlgebra.lift ℂ <| Sl2.lift ℂ to_end_𝒜_linear (by
+def to_end_𝒜 : (USl2 ℂ) →ₐ[ℂ] Module.End ℂ 𝒜 := UniversalEnvelopingAlgebra.lift ℂ <| Sl2.lift ℂ to_end_𝒜_linear (by
     ext
     simp [←𝒳.lie_X_Y]
     rfl
